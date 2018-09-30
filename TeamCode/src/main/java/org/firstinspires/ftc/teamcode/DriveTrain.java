@@ -5,4 +5,6 @@ public interface DriveTrain {
     void driveTo(double x,double y);
     void turnAbsolute(double theta);
     void lookAt(double x, double y);
+
+    void driveForward(double distance);
 }

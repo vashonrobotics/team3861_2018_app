@@ -74,7 +74,7 @@ public class CraterOpMode extends LinearOpMode {
 
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
-
+        /*
         if(mineralDetector.isGold()) {
             driveTrain.driveTo(36,36);
         } else {
@@ -93,5 +93,9 @@ public class CraterOpMode extends LinearOpMode {
         //Make a line for dropping marker in depot before heading to crater.
         //Drive back to crater.
         driveTrain.driveTo(24,56);
+        */
+        driveTrain.driveForward(24);
+
     }
 }
+

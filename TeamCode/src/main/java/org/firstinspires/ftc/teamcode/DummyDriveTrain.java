@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class DummyDriveTrain implements DriveTrain {
-    private static final double COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
-    private static final double DRIVE_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
+    private static final double COUNTS_PER_MOTOR_REV = 4 ;    // eg: TETRIX Motor Encoder
+    private static final double DRIVE_GEAR_REDUCTION = 72 ;     // This is < 1.0 if geared UP
 
     private static final double ENCODER_STEPS_PER_WHEEL_ROTATION =
             COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
@@ -40,8 +40,11 @@ public class DummyDriveTrain implements DriveTrain {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
+
+        /*
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        */
 
         leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -54,6 +57,11 @@ public class DummyDriveTrain implements DriveTrain {
         double yBot = navigation.getY();
 
         double distance = Math.sqrt(Math.pow(x - xBot, 2) + Math.pow(y - yBot, 2));
+        driveForward(distance);
+
+    }
+
+    public void driveForward(double distance) {
         double wheelRadians = distance / WHEEL_RADIUS_INCHES;
         int stepsToTurn = getStepsToTurn(wheelRadians);
         turnWheels(stepsToTurn, stepsToTurn);
@@ -79,10 +87,14 @@ public class DummyDriveTrain implements DriveTrain {
 
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         leftDrive.setTargetPosition(leftSteps);
         rightDrive.setTargetPosition(rightSteps);
-        leftDrive.setPower(0.5);
-        rightDrive.setPower(0.5);
+        leftDrive.setPower(0.05);
+        rightDrive.setPower(0.05);
 
         while(rightDrive.isBusy() || leftDrive.isBusy()) {
             try {
@@ -97,7 +109,12 @@ public class DummyDriveTrain implements DriveTrain {
     private int getStepsToTurn(double wheelRadians) {
         double wheelTurns = wheelRadians / (2 * Math.PI);
 
-        return (int)Math.round(wheelTurns * ENCODER_STEPS_PER_WHEEL_ROTATION);
+        int steps =  (int)Math.round(wheelTurns * ENCODER_STEPS_PER_WHEEL_ROTATION);
+        String message = String.format("Radians: %f, Steps: %d", wheelRadians, steps);
+        telemetry.addData("Turning wheels", message);
+        telemetry.update();
+
+        return steps;
     }
 
     @Override
