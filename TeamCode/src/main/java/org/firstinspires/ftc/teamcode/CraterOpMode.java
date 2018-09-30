@@ -66,6 +66,7 @@ public class CraterOpMode extends LinearOpMode {
         navigation = new DummyNavigation();
         driveTrain = new DummyDriveTrain(hardwareMap, navigation);
         driveTrain.init();
+        mineralDetector = new DummyMineralDetector();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
