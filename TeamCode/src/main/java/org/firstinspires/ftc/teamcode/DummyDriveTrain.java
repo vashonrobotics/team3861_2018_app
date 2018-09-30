@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class DummyDriveTrain implements DriveTrain {
     private static final double COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
@@ -13,6 +15,7 @@ public class DummyDriveTrain implements DriveTrain {
     // L is the distance between the center of rotation on the bot and the wheel
     private static final double L_INCHES = 16.0;
     private static final double WHEEL_RADIUS_INCHES = 3.5;
+    private final Telemetry telemetry;
 
     private Navigation navigation;
 
@@ -21,9 +24,11 @@ public class DummyDriveTrain implements DriveTrain {
 
     private HardwareMap hardwareMap;
 
-    public DummyDriveTrain(HardwareMap hardwareMap, Navigation navigation) {
+    public DummyDriveTrain(HardwareMap hardwareMap, Navigation navigation,
+                           Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         this.navigation = navigation;
+        this.telemetry = telemetry;
     }
 
     public void init() {
@@ -68,6 +73,10 @@ public class DummyDriveTrain implements DriveTrain {
     }
 
     private void turnWheels(int rightSteps, int leftSteps) {
+        String message = String.format("L %d, R %s", rightSteps, leftSteps);
+        telemetry.addData("Turning wheels", message);
+        telemetry.update();
+
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftDrive.setTargetPosition(leftSteps);
@@ -82,6 +91,7 @@ public class DummyDriveTrain implements DriveTrain {
                 break;
             }
         }
+        telemetry.addData("Turning wheels", "Finished");
     }
 
     private int getStepsToTurn(double wheelRadians) {

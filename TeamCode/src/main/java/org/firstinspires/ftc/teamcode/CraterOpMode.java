@@ -64,13 +64,17 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.update();
 
         navigation = new DummyNavigation();
-        driveTrain = new DummyDriveTrain(hardwareMap, navigation);
+        driveTrain = new DummyDriveTrain(hardwareMap, navigation, telemetry);
         driveTrain.init();
         mineralDetector = new DummyMineralDetector();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+
+        telemetry.addData("Status", "Initial sequence");
+        telemetry.update();
+
         if(mineralDetector.isGold()) {
             driveTrain.driveTo(36,36);
         } else {
