@@ -4,11 +4,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class DummyDriveTrain implements DriveTrain {
-    private final double ENCODER_STEPS_PER_WHEEL_ROTATION = 360.0;
+    private static final double COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
+    private static final double DRIVE_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
+
+    private static final double ENCODER_STEPS_PER_WHEEL_ROTATION =
+            COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
 
     // L is the distance between the center of rotation on the bot and the wheel
-    private final double L_INCHES = 16.0;
-    private final double WHEEL_RADIUS_INCHES = 3.5;
+    private static final double L_INCHES = 16.0;
+    private static final double WHEEL_RADIUS_INCHES = 3.5;
 
     private Navigation navigation;
 
