@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class DummyDriveTrain implements DriveTrain {
+public class DifferentialDriveTrain implements DriveTrain {
     private static final double COUNTS_PER_MOTOR_REV = 4 ;    // eg: TETRIX Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 72 ;     // This is < 1.0 if geared UP
 
@@ -16,7 +16,7 @@ public class DummyDriveTrain implements DriveTrain {
     private static final double L_INCHES = 16.0;
     private static final double WHEEL_RADIUS_INCHES = 3.5;
     private final Telemetry telemetry;
-
+    private final OdometryNavigation oNav;
     private Navigation navigation;
 
     private DcMotor leftDrive = null;
@@ -24,11 +24,13 @@ public class DummyDriveTrain implements DriveTrain {
 
     private HardwareMap hardwareMap;
 
-    public DummyDriveTrain(HardwareMap hardwareMap, Navigation navigation,
-                           Telemetry telemetry) {
+    public DifferentialDriveTrain(HardwareMap hardwareMap, Navigation navigation,
+                                  OdometryNavigation oNav,
+                                  Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         this.navigation = navigation;
         this.telemetry = telemetry;
+        this.oNav = oNav;
     }
 
     public void init() {
@@ -62,9 +64,18 @@ public class DummyDriveTrain implements DriveTrain {
     }
 
     public void driveForward(double distance) {
+        double startingTheta = navigation.getTheta();
+        double startingX = navigation.getX();
+        double startingY = navigation.getY();
         double wheelRadians = distance / WHEEL_RADIUS_INCHES;
         int stepsToTurn = getStepsToTurn(wheelRadians);
         turnWheels(stepsToTurn, stepsToTurn);
+        /*
+        Set up for updating new coordinates for where the location of the robot
+        is for navigating the game field.
+        */
+        oNav.setX(startingX + distance * Math.cos(startingTheta));
+        oNav.setY(startingY + distance * Math.sin(startingTheta));
     }
 
     @Override
@@ -74,10 +85,12 @@ public class DummyDriveTrain implements DriveTrain {
     }
 
     private void turnRelative(double thetaToTurn) {
+        double startingTheta = navigation.getTheta();
         double wheelRadians = thetaToTurn * L_INCHES / WHEEL_RADIUS_INCHES;
         int stepsToTurn = getStepsToTurn(wheelRadians);
 
         turnWheels(-stepsToTurn, stepsToTurn);
+        oNav.setTheta(startingTheta + thetaToTurn);
     }
 
     private void turnWheels(int rightSteps, int leftSteps) {

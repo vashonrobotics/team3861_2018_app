@@ -30,9 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -63,8 +61,9 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        navigation = new DummyNavigation();
-        driveTrain = new DummyDriveTrain(hardwareMap, navigation, telemetry);
+        OdometryNavigation oNav = new OdometryNavigation(16, 16, Math.PI/4);
+        this.navigation = oNav;
+        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, telemetry);
         driveTrain.init();
         mineralDetector = new DummyMineralDetector();
 
@@ -74,7 +73,7 @@ public class CraterOpMode extends LinearOpMode {
 
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
-        /*
+
         if(mineralDetector.isGold()) {
             driveTrain.driveTo(36,36);
         } else {
@@ -93,9 +92,9 @@ public class CraterOpMode extends LinearOpMode {
         //Make a line for dropping marker in depot before heading to crater.
         //Drive back to crater.
         driveTrain.driveTo(24,56);
-        */
+        /*
         driveTrain.driveForward(24);
-
+        */
     }
 }
 
