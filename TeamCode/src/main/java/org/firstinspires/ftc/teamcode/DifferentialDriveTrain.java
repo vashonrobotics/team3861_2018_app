@@ -89,14 +89,20 @@ public class DifferentialDriveTrain implements DriveTrain {
         double wheelRadians = thetaToTurn * L_INCHES / WHEEL_RADIUS_INCHES;
         int stepsToTurn = getStepsToTurn(wheelRadians);
 
+        String message = String.format("Turning relative radians, %f, %f degrees", thetaToTurn,
+                thetaToTurn * 180 / Math.PI);
+
+        telemetry.addData("Turning wheels", message);
+        telemetry.update();
+
         turnWheels(-stepsToTurn, stepsToTurn);
         oNav.setTheta(startingTheta + thetaToTurn);
     }
 
     private void turnWheels(int rightSteps, int leftSteps) {
-        String message = String.format("L %d, R %s", rightSteps, leftSteps);
-        telemetry.addData("Turning wheels", message);
-        telemetry.update();
+//        String message = String.format("L %d, R %s", rightSteps, leftSteps);
+//        telemetry.addData("Turning wheels", message);
+//        telemetry.update();
 
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -116,16 +122,16 @@ public class DifferentialDriveTrain implements DriveTrain {
                 break;
             }
         }
-        telemetry.addData("Turning wheels", "Finished");
+//        telemetry.addData("Turning wheels", "Finished");
     }
 
     private int getStepsToTurn(double wheelRadians) {
         double wheelTurns = wheelRadians / (2 * Math.PI);
 
         int steps =  (int)Math.round(wheelTurns * ENCODER_STEPS_PER_WHEEL_ROTATION);
-        String message = String.format("Radians: %f, Steps: %d", wheelRadians, steps);
-        telemetry.addData("Turning wheels", message);
-        telemetry.update();
+//        String message = String.format("Radians: %f, Steps: %d", wheelRadians, steps);
+//        telemetry.addData("Turning wheels", message);
+//        telemetry.update();
 
         return steps;
     }
