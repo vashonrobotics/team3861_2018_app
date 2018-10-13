@@ -48,7 +48,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="Depot Autonomous Op Mode", group="Linear Opmode")
-public class DeoptOpMode extends LinearOpMode {
+public class DepotOpMode extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -62,8 +62,8 @@ public class DeoptOpMode extends LinearOpMode {
         telemetry.update();
 
         OdometryNavigation oNav = new OdometryNavigation(16, 16, Math.PI/4);
+        SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         this.navigation = oNav;
-        SimpleOutput output = new TelemetrySimpleOutput(telemetry) ;
         driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, output);
         driveTrain.init();
         mineralDetector = new DummyMineralDetector();
