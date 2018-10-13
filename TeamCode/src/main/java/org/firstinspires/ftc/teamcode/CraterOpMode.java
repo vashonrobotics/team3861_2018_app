@@ -75,29 +75,25 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
 
-        driveTrain.lookAt(48, 24);
-        doSleep();
-        driveTrain.lookAt(24, 48);
-
-//        if(mineralDetector.isGold()) {
-//            driveTrain.driveTo(36,36);
-//        } else {
-//            driveTrain.lookAt(48, 24);
-//            doSleep();
-//            if(mineralDetector.isGold()) {
-//                driveTrain.driveTo(48,24);
-//            } else {
-//                driveTrain.driveTo(24,48);
-//            }
-//        }
-//        //Drive back a little to starting ground position.
-//        driveTrain.driveTo(16,16);
-//        //Drive to the depot.
-//        driveTrain.driveTo(0,52);
-//        driveTrain.driveTo(-48,56);
-//        //Make a line for dropping marker in depot before heading to crater.
-//        //Drive back to crater.
-//        driveTrain.driveTo(24,56);
+        if(mineralDetector.isGold()) {
+            driveTrain.driveTo(36,36);
+        } else {
+            driveTrain.lookAt(48, 24);
+            doSleep();
+            if(mineralDetector.isGold()) {
+                driveTrain.driveTo(48,24);
+            } else {
+                driveTrain.driveTo(24,48);
+            }
+        }
+        //Drive back a little to starting ground position.
+        driveTrain.driveTo(16,16);
+        //Drive to the depot.
+        driveTrain.driveTo(0,52);
+        driveTrain.driveTo(-48,56);
+        //Make a line for dropping marker in depot before heading to crater.
+        //Drive back to crater.
+        driveTrain.driveTo(24,56);
         /*
         driveTrain.driveForward(24);
         */

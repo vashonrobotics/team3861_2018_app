@@ -13,8 +13,8 @@ public class DifferentialDriveTrain implements DriveTrain {
             COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
 
     // L is the distance between the center of rotation on the bot and the wheel
-    private static final double L_INCHES = 16.0;
-    private static final double WHEEL_RADIUS_INCHES = 3.5;
+    private static final double L_INCHES = 17.0 / 2;
+    private static final double WHEEL_RADIUS_INCHES = 7.25 / 2;
     private final SimpleOutput output;
     private final OdometryNavigation oNav;
     private Navigation navigation;
