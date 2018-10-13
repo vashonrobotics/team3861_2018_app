@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.PI;
+
 public class OdometryNavigation implements Navigation {
     private double x;
     private double y;
@@ -35,7 +37,19 @@ public class OdometryNavigation implements Navigation {
     }
 
     public void setTheta(double theta) {
+        theta = normalizeTheta(theta);
         this.theta = theta;
+    }
+
+    private double normalizeTheta(double theta) {
+        while(theta > 2 * PI) {
+            theta -= 2 * PI;
+        }
+
+        while(theta < -2 * PI) {
+            theta += 2 * PI;
+        }
+        return theta;
     }
 
 
