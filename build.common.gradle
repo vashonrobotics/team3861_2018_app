@@ -101,5 +101,6 @@ repositories {
     flatDir {
         dirs rootProject.file('libs')
     }
+    maven { url 'http://repo1.maven.org/maven2' }
 }
 apply from: 'build.release.gradle'

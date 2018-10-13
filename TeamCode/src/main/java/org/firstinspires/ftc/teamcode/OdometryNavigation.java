@@ -13,17 +13,17 @@ public class OdometryNavigation implements Navigation {
 
     @Override
     public double getTheta() {
-        return 0;
+        return theta;
     }
 
     @Override
     public double getX() {
-        return 0;
+        return x;
     }
 
     @Override
     public double getY() {
-        return 0;
+        return y;
     }
 
     public void setX(double x) {

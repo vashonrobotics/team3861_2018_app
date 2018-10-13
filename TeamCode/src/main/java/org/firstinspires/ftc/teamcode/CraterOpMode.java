@@ -62,8 +62,9 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.update();
 
         OdometryNavigation oNav = new OdometryNavigation(16, 16, Math.PI/4);
+        SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         this.navigation = oNav;
-        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, telemetry);
+        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, output);
         driveTrain.init();
         mineralDetector = new DummyMineralDetector();
 

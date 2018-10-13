@@ -15,7 +15,7 @@ public class DifferentialDriveTrain implements DriveTrain {
     // L is the distance between the center of rotation on the bot and the wheel
     private static final double L_INCHES = 16.0;
     private static final double WHEEL_RADIUS_INCHES = 3.5;
-    private final Telemetry telemetry;
+    private final SimpleOutput output;
     private final OdometryNavigation oNav;
     private Navigation navigation;
 
@@ -26,10 +26,10 @@ public class DifferentialDriveTrain implements DriveTrain {
 
     public DifferentialDriveTrain(HardwareMap hardwareMap, Navigation navigation,
                                   OdometryNavigation oNav,
-                                  Telemetry telemetry) {
+                                  SimpleOutput output) {
         this.hardwareMap = hardwareMap;
         this.navigation = navigation;
-        this.telemetry = telemetry;
+        this.output = output;
         this.oNav = oNav;
     }
 
@@ -84,19 +84,19 @@ public class DifferentialDriveTrain implements DriveTrain {
         turnRelative(thetaToTurn);
     }
 
-    private void turnRelative(double thetaToTurn) {
+    @Override
+    public void turnRelative(double thetaToTurn) {
         double startingTheta = navigation.getTheta();
         double wheelRadians = thetaToTurn * L_INCHES / WHEEL_RADIUS_INCHES;
         int stepsToTurn = getStepsToTurn(wheelRadians);
 
-        turnWheels(-stepsToTurn, stepsToTurn);
+        turnWheels(stepsToTurn, -stepsToTurn);
         oNav.setTheta(startingTheta + thetaToTurn);
     }
 
-    private void turnWheels(int rightSteps, int leftSteps) {
+    protected void turnWheels(int rightSteps, int leftSteps) {
         String message = String.format("L %d, R %s", rightSteps, leftSteps);
-        telemetry.addData("Turning wheels", message);
-        telemetry.update();
+        output.write("Turning wheels", message);
 
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -116,7 +116,7 @@ public class DifferentialDriveTrain implements DriveTrain {
                 break;
             }
         }
-        telemetry.addData("Turning wheels", "Finished");
+        output.write("Turning wheels", "Finished");
     }
 
     private int getStepsToTurn(double wheelRadians) {
@@ -124,17 +124,20 @@ public class DifferentialDriveTrain implements DriveTrain {
 
         int steps =  (int)Math.round(wheelTurns * ENCODER_STEPS_PER_WHEEL_ROTATION);
         String message = String.format("Radians: %f, Steps: %d", wheelRadians, steps);
-        telemetry.addData("Turning wheels", message);
-        telemetry.update();
+        output.write("Turning wheels", message);
 
         return steps;
     }
 
     @Override
     public void lookAt(double x, double y) {
+        double theta = calculateDirectionToLook(x, y);
+        turnAbsolute(theta);
+    }
+
+    double calculateDirectionToLook(double x, double y) {
         double relativeX = x - navigation.getX();
         double relativeY = y - navigation.getY();
-        double theta = Math.atan2(relativeY, relativeX);
-        turnAbsolute(theta);
+        return Math.atan2(relativeY, relativeX);
     }
 }
