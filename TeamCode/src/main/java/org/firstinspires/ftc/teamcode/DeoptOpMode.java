@@ -63,12 +63,8 @@ public class DeoptOpMode extends LinearOpMode {
 
         OdometryNavigation oNav = new OdometryNavigation(16, 16, Math.PI/4);
         this.navigation = oNav;
-        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, telemetry);
-        driveTrain.init();
-        mineralDetector = new DummyMineralDetector();
-
-        navigation = new DummyNavigation();
-        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation,oNav, telemetry);
+        SimpleOutput output = new TelemetrySimpleOutput(telemetry) ;
+        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, output);
         driveTrain.init();
         mineralDetector = new DummyMineralDetector();
 
