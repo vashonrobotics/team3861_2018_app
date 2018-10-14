@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Iterative;
 
-@TeleOp(name="Lift Arm", group="iterative op mode")
+
 public class LiftArm implements hardwareSubsystem {
     private DcMotor top;
     private DcMotor bottom;
