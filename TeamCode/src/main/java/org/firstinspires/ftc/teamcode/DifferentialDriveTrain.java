@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class DifferentialDriveTrain implements DriveTrain {
+public class DifferentialDriveTrain extends AbstractDifferentialDriveTrain {
     private static final double COUNTS_PER_MOTOR_REV = 4 ;    // eg: TETRIX Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 72 ;     // This is < 1.0 if geared UP
 
@@ -15,9 +15,6 @@ public class DifferentialDriveTrain implements DriveTrain {
     // L is the distance between the center of rotation on the bot and the wheel
     private static final double L_INCHES = 16.5 / 2;
     private static final double WHEEL_RADIUS_INCHES = 7.25 / 2;
-    private final SimpleOutput output;
-    private final OdometryNavigation oNav;
-    private Navigation navigation;
 
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
@@ -27,13 +24,13 @@ public class DifferentialDriveTrain implements DriveTrain {
     public DifferentialDriveTrain(HardwareMap hardwareMap, Navigation navigation,
                                   OdometryNavigation oNav,
                                   SimpleOutput output) {
+        super(output, oNav, navigation);
         this.hardwareMap = hardwareMap;
-        this.navigation = navigation;
-        this.output = output;
-        this.oNav = oNav;
     }
 
     public void init() {
+        super.init();
+
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -52,47 +49,9 @@ public class DifferentialDriveTrain implements DriveTrain {
         rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    @Override
-    public void driveTo(double x, double y) {
-        lookAt(x, y);
-        double xBot = navigation.getX();
-        double yBot = navigation.getY();
-
-        double distance = Math.sqrt(Math.pow(x - xBot, 2) + Math.pow(y - yBot, 2));
-        driveForward(distance);
-
-    }
-
-    public void driveForward(double distance) {
-        double startingTheta = navigation.getTheta();
-        double startingX = navigation.getX();
-        double startingY = navigation.getY();
-        double wheelRadians = distance / WHEEL_RADIUS_INCHES;
-        int stepsToTurn = getStepsToTurn(wheelRadians);
-        turnWheels(stepsToTurn, stepsToTurn);
-        /*
-        Set up for updating new coordinates for where the location of the robot
-        is for navigating the game field.
-        */
-        oNav.setX(startingX + distance * Math.cos(startingTheta));
-        oNav.setY(startingY + distance * Math.sin(startingTheta));
-    }
-
-    @Override
-    public void turnAbsolute(double theta) {
-        double thetaToTurn = theta - navigation.getTheta();
-        turnRelative(thetaToTurn);
-    }
-
-    @Override
-    public void turnRelative(double thetaToTurn) {
-        double startingTheta = navigation.getTheta();
-        double wheelRadians = thetaToTurn * L_INCHES / WHEEL_RADIUS_INCHES;
-        int stepsToTurn = getStepsToTurn(wheelRadians);
-
-        turnWheels(stepsToTurn, -stepsToTurn);
-        oNav.setTheta(startingTheta + thetaToTurn);
-    }
+    protected double getWheelRadius() { return WHEEL_RADIUS_INCHES; }
+    protected double getDriveLeverArmLength () { return L_INCHES; }
+    protected double getStepsPerWheelRotation() { return ENCODER_STEPS_PER_WHEEL_ROTATION; }
 
     protected void turnWheels(int rightSteps, int leftSteps) {
         String message = String.format("L %d, R %s", rightSteps, leftSteps);
@@ -117,27 +76,5 @@ public class DifferentialDriveTrain implements DriveTrain {
             }
         }
         output.write("Turning wheels", "Finished");
-    }
-
-    private int getStepsToTurn(double wheelRadians) {
-        double wheelTurns = wheelRadians / (2 * Math.PI);
-
-        int steps =  (int)Math.round(wheelTurns * ENCODER_STEPS_PER_WHEEL_ROTATION);
-        String message = String.format("Radians: %f, Steps: %d", wheelRadians, steps);
-        output.write("Turning wheels", message);
-
-        return steps;
-    }
-
-    @Override
-    public void lookAt(double x, double y) {
-        double theta = calculateDirectionToLook(x, y);
-        turnAbsolute(theta);
-    }
-
-    double calculateDirectionToLook(double x, double y) {
-        double relativeX = x - navigation.getX();
-        double relativeY = y - navigation.getY();
-        return Math.atan2(relativeY, relativeX);
     }
 }
