@@ -10,6 +10,6 @@ public class LiftArmTest extends LinearOpMode {
     public void runOpMode(){
         liftArm=new LiftArm(hardwareMap);
         liftArm.init();
-        liftArm.raise();
+        // liftArm.raise();
     }
 }
