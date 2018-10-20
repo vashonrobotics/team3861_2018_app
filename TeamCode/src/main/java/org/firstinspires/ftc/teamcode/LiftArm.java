@@ -20,17 +20,17 @@ public class LiftArm implements hardwareSubsystem {
         this.hardwareMap=hardwareMap;
     }
     public void init() {
-        top=hardwareMap.get(DcMotor.class, "top");
-        bottom=hardwareMap.get(DcMotor.class,"bottom");
-        camServo=hardwareMap.get(Servo.class,"camServo");
+        top=hardwareMap.get(DcMotor.class, Names.LIFT_TOP);
+        bottom=hardwareMap.get(DcMotor.class, Names.LIFT_BOTTOM);
+        camServo=hardwareMap.get(Servo.class, Names.CAM_SERVO);
 
         top.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        topLimit = hardwareMap.get(DigitalChannel.class, "top_limit");
+        topLimit = hardwareMap.get(DigitalChannel.class, Names.TOP_LIMIT);
         topLimit.setMode(DigitalChannel.Mode.INPUT);
 
-        bottomLimit = hardwareMap.get(DigitalChannel.class, "bottom_limit");
+        bottomLimit = hardwareMap.get(DigitalChannel.class, Names.BOTTOM_LIMIT);
         bottomLimit.setMode(DigitalChannel.Mode.INPUT);
 
         runToBottomLimit();

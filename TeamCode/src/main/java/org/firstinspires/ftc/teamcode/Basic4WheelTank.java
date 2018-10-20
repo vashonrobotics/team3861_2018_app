@@ -71,10 +71,10 @@ public class Basic4WheelTank extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftFront = hardwareMap.get(DcMotor.class, Names.LEFT_FRONT);
+        rightFront = hardwareMap.get(DcMotor.class, Names.RIGHT_FRONT);
+        leftBack = hardwareMap.get(DcMotor.class, Names.LEFT_REAR);
+        rightBack = hardwareMap.get(DcMotor.class, Names.RIGHT_REAR);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery

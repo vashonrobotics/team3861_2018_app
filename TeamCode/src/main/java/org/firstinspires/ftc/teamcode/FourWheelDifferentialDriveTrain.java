@@ -31,10 +31,10 @@ public class FourWheelDifferentialDriveTrain extends AbstractDifferentialDriveTr
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDriveFront = hardwareMap.get(DcMotor.class, "left_drive_Front");
-        rightDriveFront = hardwareMap.get(DcMotor.class, "right_drive_Front");
-        leftDriveRear = hardwareMap.get(DcMotor.class, "left_drive_Rear");
-        rightDriveRear = hardwareMap.get(DcMotor.class, "right_drive_Rear");
+        leftDriveFront = hardwareMap.get(DcMotor.class, Names.LEFT_FRONT);
+        rightDriveFront = hardwareMap.get(DcMotor.class, Names.RIGHT_FRONT);
+        leftDriveRear = hardwareMap.get(DcMotor.class, Names.LEFT_REAR);
+        rightDriveRear = hardwareMap.get(DcMotor.class, Names.RIGHT_REAR);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
