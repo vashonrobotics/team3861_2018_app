@@ -61,6 +61,9 @@ public class Basic4WheelTank extends OpMode
     private DcMotor leftBack = null;
     private DcMotor rightBack = null;
 
+    private Collector collector = null;
+    private TelemetrySimpleOutput simpleOutput;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -83,6 +86,8 @@ public class Basic4WheelTank extends OpMode
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
 
+        simpleOutput = new TelemetrySimpleOutput(telemetry);
+        collector = new Collector(hardwareMap, simpleOutput);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -125,6 +130,22 @@ public class Basic4WheelTank extends OpMode
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
          leftPower  = -gamepad1.left_stick_y ;
          rightPower = -gamepad1.right_stick_y ;
+
+        boolean doSuck = gamepad2.dpad_down;
+        boolean doBlow = gamepad2.dpad_up;
+        if(doSuck) {
+            collector.suck();
+        } else if(doBlow) {
+            collector.blow();
+        }
+
+        boolean lowerCollector = gamepad2.left_bumper;
+        boolean raiseCollector = gamepad2.right_bumper;
+        if(lowerCollector){
+            collector.lowerCollector();
+        } else if(raiseCollector) {
+            collector.raiseCollector();
+        }
 
         // Send calculated power to wheels
         leftFront.setPower(leftPower);
