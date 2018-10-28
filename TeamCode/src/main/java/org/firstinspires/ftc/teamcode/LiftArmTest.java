@@ -3,14 +3,17 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="LAT", group="Linear OpMode")
+@Autonomous
 public class LiftArmTest extends LinearOpMode {
     LiftArm liftArm;
-    @Override
+
     public void runOpMode(){
-        liftArm=new LiftArm(hardwareMap);
-        waitForStart();
+        liftArm = new LiftArm(hardwareMap, new TelemetrySimpleOutput(telemetry));
         liftArm.init();
-        liftArm.lower();
+
+        waitForStart();
+        liftArm.landRobot();
+        liftArm.retractLandingGear();
+        // liftArm.raise();
     }
 }

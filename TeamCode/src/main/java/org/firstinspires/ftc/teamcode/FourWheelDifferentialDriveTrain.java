@@ -16,13 +16,12 @@ public class FourWheelDifferentialDriveTrain extends AbstractDifferentialDriveTr
     private DcMotor rightDriveRear = null;
     private DcMotor rightDriveFront = null;
 
-    private HardwareMap hardwareMap;
-
-    public FourWheelDifferentialDriveTrain(HardwareMap hardwareMap, Navigation navigation,
+    public FourWheelDifferentialDriveTrain(HardwareMap hardwareMap,
+                                           Navigation navigation,
                                            OdometryNavigation oNav,
+                                           SimpleIMU simpleIMU,
                                            SimpleOutput output) {
-        super(output, oNav, navigation);
-        this.hardwareMap = hardwareMap;
+        super(output, oNav, navigation, simpleIMU, hardwareMap);
     }
 
     public void init() {
@@ -38,7 +37,6 @@ public class FourWheelDifferentialDriveTrain extends AbstractDifferentialDriveTr
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-
         leftDriveFront.setDirection(DcMotor.Direction.FORWARD);
         leftDriveRear.setDirection(DcMotor.Direction.FORWARD);
         rightDriveFront.setDirection(DcMotor.Direction.REVERSE);
@@ -58,32 +56,37 @@ public class FourWheelDifferentialDriveTrain extends AbstractDifferentialDriveTr
         String message = String.format("L %d, R %s", rightSteps, leftSteps);
         output.write("Turning wheels", message);
 
-        leftDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftDriveRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDriveRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         int leftFrontSteps = leftDriveFront.getCurrentPosition() + leftSteps;
         int leftRearSteps = leftDriveRear.getCurrentPosition() + leftSteps;
         int rightFrontSteps = rightDriveFront.getCurrentPosition() + rightSteps;
         int rightRearSteps = rightDriveRear.getCurrentPosition() + rightSteps;
 
+        // set the target
         leftDriveFront.setTargetPosition(leftFrontSteps);
         leftDriveRear.setTargetPosition(leftRearSteps);
         rightDriveFront.setTargetPosition(rightFrontSteps);
         rightDriveRear.setTargetPosition(rightRearSteps);
-        leftDriveFront.setPower(0.05);
-        leftDriveRear.setPower(0.05);
-        rightDriveFront.setPower(0.05);
-        rightDriveRear.setPower(0.05);
 
-        while(rightDriveFront.isBusy() || rightDriveRear.isBusy() || leftDriveFront.isBusy() || leftDriveRear.isBusy()) {
+        // set the the power.
+        leftDriveFront.setPower(0.25);
+        leftDriveRear.setPower(0.25);
+        rightDriveFront.setPower(0.25);
+        rightDriveRear.setPower(0.25);
+
+        while(isDriveTrainBusy()) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException ex) {
                 break;
             }
         }
         output.write("Turning wheels", "Finished");
+    }
+
+    private boolean isDriveTrainBusy() {
+        return rightDriveFront.isBusy()
+                || rightDriveRear.isBusy()
+                || leftDriveFront.isBusy()
+                || leftDriveRear.isBusy();
     }
 }

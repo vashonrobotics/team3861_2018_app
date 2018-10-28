@@ -63,8 +63,10 @@ public class DepotOpMode extends LinearOpMode {
 
         OdometryNavigation oNav = new OdometryNavigation(16, 16, Math.PI/4);
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
+        SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
         this.navigation = oNav;
-        driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation, oNav, output);
+        driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
+                oNav, simpleIMU, output);
         driveTrain.init();
         mineralDetector = new DummyMineralDetector();
 
@@ -75,24 +77,24 @@ public class DepotOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
 
-        if(mineralDetector.isGold()) {
-            driveTrain.driveTo(-36,36);
-        } else {
-            driveTrain.lookAt(-24, 48);
-            if(mineralDetector.isGold()) {
-                driveTrain.driveTo(-24,48);
-            } else {
-                driveTrain.driveTo(-48,24);
-            }
-        }
-        //Drive back a little to starting ground position.
-        driveTrain.driveTo(-16,16);
-        //Drive to the depot.
-        driveTrain.driveTo(52,0);
-        driveTrain.driveTo(-48,56);
-        //Make a line for dropping marker in depot before heading to crater.
-        //Drive back to crater.
-        driveTrain.driveTo(-24,-56);
+//        if(mineralDetector.isGold()) {
+//            driveTrain.driveTo(-36,36);
+//        } else {
+//            driveTrain.lookAt(-24, 48);
+//            if(mineralDetector.isGold()) {
+//                driveTrain.driveTo(-24,48);
+//            } else {
+//                driveTrain.driveTo(-48,24);
+//            }
+//        }
+//        //Drive back a little to starting ground position.
+//        driveTrain.driveTo(-16,16);
+//        //Drive to the depot.
+//        driveTrain.driveTo(52,0);
+//        driveTrain.driveTo(-48,56);
+//        //Make a line for dropping marker in depot before heading to crater.
+//        //Drive back to crater.
+//        driveTrain.driveTo(-24,-56);
 
         driveTrain.driveForward(24);
 

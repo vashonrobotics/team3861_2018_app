@@ -30,9 +30,15 @@ public class TestDifferentialDriveTrain extends DifferentialDriveTrain {
         return nav;
     }
 
-    public TestDifferentialDriveTrain(double x, double y, double theta) {
-        super(null, resetNav(x, y, theta), nav, new PrintingSimleOutput());
+    public TestDifferentialDriveTrain(double x, double y, double theta,
+                                      double ... imuMeasurements) {
+        super(null, resetNav(x, y, theta), nav,
+                new TestSimpleIMU(imuMeasurements),
+                new PrintingSimleOutput());
     }
+
+    @Override
+    public void init() {}
 
     @Override
     protected void turnWheels(int rightSteps, int leftSteps) {
