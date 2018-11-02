@@ -60,6 +60,7 @@ public class Basic4WheelTank extends OpMode
     private DcMotor rightFront = null;
     private DcMotor leftBack = null;
     private DcMotor rightBack = null;
+    private LiftArm LiftArm;
 
     private Collector collector = null;
     private TelemetrySimpleOutput simpleOutput;
@@ -121,15 +122,15 @@ public class Basic4WheelTank extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        //double drive = -gamepad1.left_stick_y;
-        //double turn  =  gamepad1.right_stick_x;
-        //leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-        //rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+        double drive = -gamepad1.left_stick_y*(2/3);
+        double turn  =  gamepad1.right_stick_x*(2/3);
+        leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
+        rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
-         leftPower  = -gamepad1.left_stick_y ;
-         rightPower = -gamepad1.right_stick_y ;
+        // leftPower  = -gamepad1.left_stick_y ;
+        // rightPower = -gamepad1.right_stick_y ;
 
         boolean doSuck = gamepad2.dpad_down;
         boolean doBlow = gamepad2.dpad_up;
@@ -137,6 +138,18 @@ public class Basic4WheelTank extends OpMode
             collector.suck();
         } else if(doBlow) {
             collector.blow();
+        }
+
+        boolean doRaise = gamepad2.B;
+        boolean doLower = gamepad2.A;
+        boolean servoOpen = gamepad2.X;
+        if(servoOpen){
+
+        }
+        if(doRaise){
+            LiftArm.runToTopLimit();
+        }else if(doLower){
+            LiftArm.runToBottomLimit();
         }
 
         boolean lowerCollector = gamepad2.left_bumper;

@@ -11,6 +11,7 @@
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 android {
+
     compileSdkVersion 23
     buildToolsVersion '27.0.3'
     compileOptions {

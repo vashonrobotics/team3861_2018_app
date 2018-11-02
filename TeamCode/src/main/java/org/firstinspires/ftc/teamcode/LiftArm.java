@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class LiftArm implements hardwareSubsystem {
     private DcMotor top;
     private DcMotor bottom;
-    private Servo camServo;
+    public Servo camServo;
     private static final double ENCODER_STEPS_PER_WHEEL_ROTATION = 1120;
     private static final double WHEEL_RADIUS_INCHES = 0.955;
     private HardwareMap hardwareMap;
@@ -42,11 +42,11 @@ public class LiftArm implements hardwareSubsystem {
         camServo.setPosition(0);
     }
 
-    private void runToBottomLimit() {
+    public void runToBottomLimit() {
         runToSwitch(this.bottomLimit, 0.5);
     }
 
-    private void runToTopLimit() {
+    public void runToTopLimit() {
         runToSwitch(this.topLimit, -0.5);
     }
 
