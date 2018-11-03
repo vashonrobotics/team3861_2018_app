@@ -140,9 +140,9 @@ public class Basic4WheelTank extends OpMode
             collector.blow();
         }
 
-        boolean doRaise = gamepad2.B;
-        boolean doLower = gamepad2.A;
-        boolean servoOpen = gamepad2.X;
+        boolean doRaise = gamepad2.b;
+        boolean doLower = gamepad2.a;
+        boolean servoOpen = gamepad2.x;
         if(servoOpen){
 
         }
