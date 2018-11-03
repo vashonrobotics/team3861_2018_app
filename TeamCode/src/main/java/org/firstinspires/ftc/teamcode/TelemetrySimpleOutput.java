@@ -11,7 +11,7 @@ public class TelemetrySimpleOutput implements SimpleOutput {
 
     @Override
     public void write(String caption, String message) {
-        telemetry.addData("Turning wheels", message);
+        telemetry.addData(caption, message);
         telemetry.update();
     }
 }

@@ -8,7 +8,8 @@ import static org.junit.Assert.*;
 public class DifferentialDriveTrainTests {
     @Test
     public void odometryStartsInTheRightPlace() {
-        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 10, PI);
+        TestDifferentialDriveTrain driveTrain =
+                new TestDifferentialDriveTrain(0, 10, PI, PI);
         assertEquals(TestDifferentialDriveTrain.getNav().getX(), 0, 0.001);
         assertEquals(TestDifferentialDriveTrain.getNav().getY(), 10, 0.001);
         assertEquals(TestDifferentialDriveTrain.getNav().getTheta(), PI, 0.001);
@@ -16,7 +17,8 @@ public class DifferentialDriveTrainTests {
 
     @Test
     public void lookAtCalculatesCorrectly() {
-        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 0, PI/2);
+        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 0, PI/2,
+                PI/2);
         double theta = driveTrain.calculateDirectionToLook(48, 0);
         assertEquals(0, theta, 0.001);
 
@@ -41,17 +43,33 @@ public class DifferentialDriveTrainTests {
 
     @Test
     public void lookAtDoesntChangePosition() {
-        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 0, PI/2);
+        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 0, PI/2,
+                PI/2, PI/4);
+        driveTrain.init();
+
         driveTrain.lookAt(48, 48);
         assertEquals(TestDifferentialDriveTrain.getNav().getX(), 0, 0.001);
         assertEquals(TestDifferentialDriveTrain.getNav().getY(), 0, 0.001);
     }
 
     @Test
+    public void imuCorrectionHappyPath() {
+        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 0, 0,
+                0, PI/2 - 0.5, PI/2);
+        driveTrain.init();
+
+        driveTrain.lookAt(0, 48);
+    }
+
+    @Test
     public void relativeSquareEndsInCorrectPosition() {
         // drive a square using the relative commands and
         // make sure we ended up where we started.
-        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 0, 0);
+        TestDifferentialDriveTrain driveTrain =
+                new TestDifferentialDriveTrain(0, 0, 0,
+                        0, PI/2, PI /2, PI, PI, 3 * PI / 2, 3 * PI / 2);
+        driveTrain.init();
+
         driveTrain.driveForward(100);
 
         driveTrain.turnRelative(PI/2);
@@ -70,7 +88,9 @@ public class DifferentialDriveTrainTests {
 
     @Test
     public void rightTurnMovesRightWheelBackwards() {
-        TestDifferentialDriveTrain driveTrain = new TestDifferentialDriveTrain(0, 0, 0);
+        TestDifferentialDriveTrain driveTrain =
+                new TestDifferentialDriveTrain(0, 0, 0, 0, -PI/2);
+
         driveTrain.lookAt(0, -48);
 
         assertTrue("Right wheel turned the wrong way",

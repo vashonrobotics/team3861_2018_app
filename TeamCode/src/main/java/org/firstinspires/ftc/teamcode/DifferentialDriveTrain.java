@@ -19,13 +19,12 @@ public class DifferentialDriveTrain extends AbstractDifferentialDriveTrain {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
 
-    private HardwareMap hardwareMap;
-
-    public DifferentialDriveTrain(HardwareMap hardwareMap, Navigation navigation,
+    public DifferentialDriveTrain(HardwareMap hardwareMap,
+                                  Navigation navigation,
                                   OdometryNavigation oNav,
+                                  SimpleIMU simpleIMU,
                                   SimpleOutput output) {
-        super(output, oNav, navigation);
-        this.hardwareMap = hardwareMap;
+        super(output, oNav, navigation, simpleIMU, hardwareMap);
     }
 
     public void init() {
@@ -57,14 +56,11 @@ public class DifferentialDriveTrain extends AbstractDifferentialDriveTrain {
         String message = String.format("L %d, R %s", rightSteps, leftSteps);
         output.write("Turning wheels", message);
 
-        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int absoluteLeft = leftDrive.getCurrentPosition() + leftSteps;
+        int absoluteRight = rightDrive.getCurrentPosition() + rightSteps;
 
-        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftDrive.setTargetPosition(leftSteps);
-        rightDrive.setTargetPosition(rightSteps);
+        leftDrive.setTargetPosition(absoluteLeft);
+        rightDrive.setTargetPosition(absoluteRight);
         leftDrive.setPower(0.05);
         rightDrive.setPower(0.05);
 
