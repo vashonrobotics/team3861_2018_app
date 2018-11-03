@@ -70,12 +70,11 @@ public class CraterOpMode extends LinearOpMode {
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
         this.navigation = oNav;
-//        driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
-//                oNav, simpleIMU, output);
-
         driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
                 oNav, simpleIMU, output);
 
+//        driveTrain = new MiniBotDriveTrain(hardwareMap, navigation,
+//                oNav, simpleIMU, output);
 
         driveTrain.init();
         mineralDetector = new DummyMineralDetector();
@@ -87,32 +86,33 @@ public class CraterOpMode extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        liftArm.prepareToUnlatch();
         liftArm.landRobot();
         liftArm.retractLandingGear();
 
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
 
-        driveTrain.driveForward(-4);
-        driveTrain.lookAt(36, 36);
-        if(mineralDetector.isGold()) {
-            driveTrain.driveTo(36,36);
-        } else {
-            driveTrain.lookAt(48, 24);
-            doSleep();
-            if(mineralDetector.isGold()) {
-                driveTrain.driveTo(48,24);
-            } else {
-                driveTrain.driveTo(24,48);
-            }
-        }
-        //Drive back a little to starting ground position.
-        driveTrain.driveTo(30,30);
-        //Drive to the depot.
-        driveTrain.driveTo(0,52);
-        driveTrain.driveTo(-48,56);
-        //Make a line for dropping marker in depot before heading to crater.
-        //Drive back to crater.
+        driveTrain.driveForward(-46);
+//        driveTrain.lookAt(36, 36);
+//        if(mineralDetector.isGold()) {
+//              driveTrain.driveTo(48,48);
+//        } else {
+//            driveTrain.lookAt(48, 24);
+//            doSleep();
+//            if(mineralDetector.isGold()) {
+//                driveTrain.driveTo(48,24);
+//            } else {
+//                driveTrain.driveTo(24,48);
+//            }
+//        }
+//        //Drive back a little to starting ground position.
+//        driveTrain.driveTo(30,30);
+//        //Drive to the depot.
+//        driveTrain.driveTo(0,52);
+//        driveTrain.driveTo(-48,56);
+//        //Make a line for dropping marker in depot before heading to crater.
+//        //Drive back to crater.
 
 //        //driveTrain.driveTo(36,56);
 //        Random rnd = new Random();

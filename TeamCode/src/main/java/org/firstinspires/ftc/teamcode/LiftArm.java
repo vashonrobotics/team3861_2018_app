@@ -17,7 +17,7 @@ public class LiftArm implements hardwareSubsystem {
     private static final double CAM_OPEN_POSITION = 160.0 / 180;
     private static final double CAM_CLOSED_POSITION = 0;
     private static final double LATCH_OPEN_POSITION = .9;
-    private static final double LATCH_CLOSED_POSITION = .5;
+    private static final double LATCH_CLOSED_POSITION = .4;
 
     private HardwareMap hardwareMap;
     private DigitalChannel topLimit;
@@ -44,24 +44,30 @@ public class LiftArm implements hardwareSubsystem {
         bottomLimit = hardwareMap.get(DigitalChannel.class, Names.BOTTOM_LIMIT);
         bottomLimit.setMode(DigitalChannel.Mode.INPUT);
         doSleep(100);
+    }
 
+    public void prepareToUnlatch() {
         output.write("Lift Arm", "Closing hook...");
         camServo.setPosition(CAM_CLOSED_POSITION);
 
         output.write("Lift Arm", "Running to bottom limit");
-        runToBottomLimit(true);
+        runToBottomLimit(true, -0.5);
         output.write("Lift Arm", "At bottom limit");
 
         bottom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        bottom.setPower(-1.0);
+        double liftPower = -0.5;
+        bottom.setPower(liftPower);
 
         top.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        top.setPower(-1.0);
-
-        doSleep(1000);
+        top.setPower(liftPower);
 
         liftLatch.setPosition(LATCH_OPEN_POSITION);
-        doSleep(1000);
+        for(int i = 0; i < 5; i++) {
+            doSleep(200);
+            top.setPower(0);
+            doSleep(50);
+            top.setPower(liftPower);
+        }
 
         int bottomCurrentPosition = bottom.getCurrentPosition();
         int topCurrentPosition = top.getCurrentPosition();
@@ -81,14 +87,40 @@ public class LiftArm implements hardwareSubsystem {
     }
 
     public void retractLandingGear() {
-        runToBottomLimit(false);
         camServo.setPosition(CAM_CLOSED_POSITION);
+        doSleep(100);
+        runToBottomLimit(false, -0.5);
+
         doSleep(100);
     }
 
-    private void runToBottomLimit(boolean reset) {
+    public void extendLandingGear() {
+        liftLatch.setPosition(LATCH_OPEN_POSITION);
+        doSleep(100);
+        camServo.setPosition(CAM_OPEN_POSITION);
+        turnWheels(getStepsToTurn(16.0), bottom);
+    }
 
-        runToSwitch(this.bottomLimit, -0.5, reset);
+    public void takeOff() {
+        // hole the top motor at current position with full power.
+        int currentPosition = top.getCurrentPosition();
+        top.setTargetPosition(currentPosition);
+        top.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        top.setPower(1.0);
+
+        camServo.setPosition(CAM_CLOSED_POSITION);
+        doSleep(500);
+        runToBottomLimit(false, -1.0);
+        liftLatch.setPosition(LATCH_CLOSED_POSITION);
+        doSleep(500);
+
+        top.setPower(0);
+        bottom.setPower(0);
+   }
+
+    private void runToBottomLimit(boolean reset, double power) {
+
+        runToSwitch(this.bottomLimit, power, reset);
     }
 
     private void runToTopLimit() {

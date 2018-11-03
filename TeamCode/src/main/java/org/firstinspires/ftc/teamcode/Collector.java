@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-
 public class Collector
 {
     private final HardwareMap hardwareMap;
@@ -27,14 +25,14 @@ public class Collector
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         axel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         axel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
     }
     public void lowerCollector(){
-        axel.setTargetPosition(1000);
+        axel.setTargetPosition(725);
+        axel.setPower(0.75);
     }
     public void raiseCollector(){
         axel.setTargetPosition(0);
+        axel.setPower(0.75);
     }
     public void suck(){
         drive.setPower(.75);
@@ -42,4 +40,8 @@ public class Collector
     public void blow(){
         drive.setPower(-.75);
     }
+    public void stop(){
+        drive.setPower(0);
+    }
+
 }
