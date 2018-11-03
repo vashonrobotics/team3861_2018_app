@@ -60,6 +60,7 @@ public class CraterOpMode extends LinearOpMode {
     private MineralDetector mineralDetector;
     private Navigation navigation;
     private LiftArm liftArm;
+    private MineralDetector detector;
 
     @Override
     public void runOpMode() {
@@ -70,14 +71,14 @@ public class CraterOpMode extends LinearOpMode {
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
         this.navigation = oNav;
-        driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
-                oNav, simpleIMU, output);
-
+        //driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
+           //     oNav, simpleIMU, output);
+        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, simpleIMU, output);
 //        driveTrain = new MiniBotDriveTrain(hardwareMap, navigation,
 //                oNav, simpleIMU, output);
 
         driveTrain.init();
-        mineralDetector = new DummyMineralDetector();
+        mineralDetector = new DummyMineralDetector(hardwareMap);
 
         liftArm = new LiftArm(hardwareMap, output);
         liftArm.init();

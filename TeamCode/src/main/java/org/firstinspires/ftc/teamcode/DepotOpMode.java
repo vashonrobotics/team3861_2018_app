@@ -68,7 +68,7 @@ public class DepotOpMode extends LinearOpMode {
         driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
                 oNav, simpleIMU, output);
         driveTrain.init();
-        mineralDetector = new DummyMineralDetector();
+        mineralDetector = new DummyMineralDetector(hardwareMap);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
