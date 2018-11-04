@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 public class Names {
     // Drive Base
-    public static String LEFT_FRONT = "Left Rear";
-    public static String LEFT_REAR = "Left Front";
+    public static String LEFT_FRONT = "Left Front";
+    public static String LEFT_REAR = "Left Rear";
     public static String RIGHT_FRONT = "Right Front";
     public static String RIGHT_REAR = "Right Rear";
 

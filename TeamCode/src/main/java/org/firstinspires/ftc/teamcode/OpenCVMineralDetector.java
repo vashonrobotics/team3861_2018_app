@@ -5,14 +5,15 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldDetector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class DummyMineralDetector implements MineralDetector {
+public class OpenCVMineralDetector implements MineralDetector {
     private GoldDetector detector;
     private HardwareMap hardwareMap;
 
-    public DummyMineralDetector(HardwareMap hardwareMap) {
+    public OpenCVMineralDetector(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
 
+    @Override
     public void init(){
         detector = new GoldDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera

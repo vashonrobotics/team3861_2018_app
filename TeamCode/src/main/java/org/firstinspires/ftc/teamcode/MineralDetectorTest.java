@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldDetector;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Mineral Detector test", group="Iterative Opmode")
 public class MineralDetectorTest extends OpMode {
-    DummyMineralDetector mineralDetector;
+    OpenCVMineralDetector mineralDetector;
     GoldDetector goldDetector;
     @Override
     public void init() {
-        mineralDetector=new DummyMineralDetector(hardwareMap);
+        mineralDetector=new OpenCVMineralDetector(hardwareMap);
         mineralDetector.init();
     }
     @Override

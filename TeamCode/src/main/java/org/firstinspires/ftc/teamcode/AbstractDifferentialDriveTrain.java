@@ -74,8 +74,6 @@ public abstract class AbstractDifferentialDriveTrain implements DriveTrain {
 
         do {
             // double errorCorrectionFactor = errorCount / totalErrorProportion;
-            imuTurnAmount = imuTurnAmount * 1.0/0.82;//imuTurnAmount * errorCorrectionFactor;
-
             doTurn(imuTurnAmount);
 
             // wait for the IMU to settle
@@ -101,7 +99,7 @@ public abstract class AbstractDifferentialDriveTrain implements DriveTrain {
             first = false;
             imuTurnAmount = newImuTurnAmount;
 
-        } while (Math.abs(imuTurnAmount) > 0.1);
+        } while (Math.abs(imuTurnAmount) > 0.01);
 
         oNav.setTheta(startingTheta + thetaToTurn);
     }

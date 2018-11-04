@@ -33,8 +33,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.Random;
-
 import static java.lang.Math.PI;
 
 
@@ -67,7 +65,7 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        OdometryNavigation oNav = new OdometryNavigation(16, 16, -3 * PI/4);
+        OdometryNavigation oNav = new OdometryNavigation(16, 16,  PI/4);
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
         this.navigation = oNav;
@@ -78,7 +76,8 @@ public class CraterOpMode extends LinearOpMode {
 //                oNav, simpleIMU, output);
 
         driveTrain.init();
-        mineralDetector = new DummyMineralDetector(hardwareMap);
+        mineralDetector = new OpenCVMineralDetector(hardwareMap);
+        mineralDetector.init();
 
         liftArm = new LiftArm(hardwareMap, output);
         liftArm.init();
@@ -94,39 +93,26 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
 
-        driveTrain.driveForward(-46);
-//        driveTrain.lookAt(36, 36);
-//        if(mineralDetector.isGold()) {
-//              driveTrain.driveTo(48,48);
-//        } else {
-//            driveTrain.lookAt(48, 24);
-//            doSleep();
-//            if(mineralDetector.isGold()) {
-//                driveTrain.driveTo(48,24);
-//            } else {
-//                driveTrain.driveTo(24,48);
-//            }
-//        }
-//        //Drive back a little to starting ground position.
-//        driveTrain.driveTo(30,30);
-//        //Drive to the depot.
-//        driveTrain.driveTo(0,52);
-//        driveTrain.driveTo(-48,56);
+        driveTrain.lookAt(36, 36);
+        if(mineralDetector.isGold()) {
+              driveTrain.driveTo(48,48);
+        } else {
+            driveTrain.lookAt(48, 24);
+            doSleep();
+            if(mineralDetector.isGold()) {
+                driveTrain.driveTo(48,24);
+            } else {
+                driveTrain.driveTo(24,48);
+            }
+        }
+        //Drive back a little to starting ground position.
+        driveTrain.driveTo(30,30);
+        //Drive to the depot.
+        driveTrain.driveTo(0,52);
+        driveTrain.driveTo(-48,56);
 //        //Make a line for dropping marker in depot before heading to crater.
 //        //Drive back to crater.
-
-//        //driveTrain.driveTo(36,56);
-//        Random rnd = new Random();
-//
-//        while(true) {
-//            double toTurn = PI * (rnd.nextDouble() - 0.5);
-//            driveTrain.turnRelative(toTurn);
-//            idle();
-//        }
-//        //driveTrain.driveForward(36);
-//        /*
-//        driveTrain.driveForward(24);
-//        */
+        driveTrain.driveTo(36,56);
     }
 
     public void doSleep() {
