@@ -9,10 +9,9 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 public class LiftArm implements hardwareSubsystem {
     private final SimpleOutput output;
-    private DcMotor top;
     private DcMotor bottom;
     private Servo camServo;
-    private static final double ENCODER_STEPS_PER_WHEEL_ROTATION = 1120;
+    private static final double ENCODER_STEPS_PER_WHEEL_ROTATION = 1680;
     private static final double WHEEL_RADIUS_INCHES = 0.955;
     private static final double CAM_OPEN_POSITION = 160.0 / 180;
     private static final double CAM_CLOSED_POSITION = 0;
@@ -30,12 +29,10 @@ public class LiftArm implements hardwareSubsystem {
     }
 
     public void init() {
-        top = hardwareMap.get(DcMotor.class, Names.LIFT_TOP);
         bottom = hardwareMap.get(DcMotor.class, Names.LIFT_BOTTOM);
         camServo = hardwareMap.get(Servo.class, Names.CAM_SERVO);
         liftLatch = hardwareMap.get(Servo.class, Names.LIFT_LATCH);
 
-        top.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         topLimit = hardwareMap.get(DigitalChannel.class, Names.TOP_LIMIT);
@@ -58,25 +55,21 @@ public class LiftArm implements hardwareSubsystem {
         double liftPower = -0.5;
         bottom.setPower(liftPower);
 
-        top.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        top.setPower(liftPower);
+
 
         liftLatch.setPosition(LATCH_OPEN_POSITION);
         for(int i = 0; i < 5; i++) {
             doSleep(200);
-            top.setPower(0);
+            bottom.setPower(0);
             doSleep(50);
-            top.setPower(liftPower);
+            bottom.setPower(liftPower);
         }
 
         int bottomCurrentPosition = bottom.getCurrentPosition();
-        int topCurrentPosition = top.getCurrentPosition();
 
         bottom.setTargetPosition(bottomCurrentPosition);
-        top.setTargetPosition(topCurrentPosition);
 
         bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        top.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void landRobot() {
@@ -103,10 +96,10 @@ public class LiftArm implements hardwareSubsystem {
 
     public void takeOff() {
         // hole the top motor at current position with full power.
-        int currentPosition = top.getCurrentPosition();
-        top.setTargetPosition(currentPosition);
-        top.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        top.setPower(1.0);
+        int currentPosition = bottom.getCurrentPosition();
+        bottom.setTargetPosition(currentPosition);
+        bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bottom.setPower(1.0);
 
         camServo.setPosition(CAM_CLOSED_POSITION);
         doSleep(500);
@@ -114,7 +107,6 @@ public class LiftArm implements hardwareSubsystem {
         liftLatch.setPosition(LATCH_CLOSED_POSITION);
         doSleep(500);
 
-        top.setPower(0);
         bottom.setPower(0);
    }
 
@@ -187,7 +179,7 @@ public class LiftArm implements hardwareSubsystem {
 
     public void lower() {
         runToTopLimit();
-        turnWheels(getStepsToTurn(-20),top);
+        turnWheels(getStepsToTurn(-20),bottom);
         camServo.setPosition(1);
     }
 }
