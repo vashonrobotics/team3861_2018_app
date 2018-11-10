@@ -96,10 +96,6 @@ public class LiftArm implements hardwareSubsystem {
 
     public void takeOff() {
         // hole the top motor at current position with full power.
-        int currentPosition = bottom.getCurrentPosition();
-        bottom.setTargetPosition(currentPosition);
-        bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        bottom.setPower(1.0);
 
         camServo.setPosition(CAM_CLOSED_POSITION);
         doSleep(500);
@@ -177,9 +173,4 @@ public class LiftArm implements hardwareSubsystem {
         }
     }
 
-    public void lower() {
-        runToTopLimit();
-        turnWheels(getStepsToTurn(-20),bottom);
-        camServo.setPosition(1);
-    }
 }

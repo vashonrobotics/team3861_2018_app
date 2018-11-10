@@ -58,7 +58,6 @@ public class CraterOpMode extends LinearOpMode {
     private MineralDetector mineralDetector;
     private Navigation navigation;
     private LiftArm liftArm;
-    private MineralDetector detector;
 
     @Override
     public void runOpMode() {
