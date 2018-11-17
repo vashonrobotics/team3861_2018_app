@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,6 +23,7 @@ public class LiftArm implements hardwareSubsystem {
     private DigitalChannel topLimit;
     private DigitalChannel bottomLimit;
     private Servo liftLatch;
+    private RevTouchSensor latchSwitch;
 
     public LiftArm(HardwareMap hardwareMap, SimpleOutput output) {
         this.output = output;
@@ -32,6 +34,7 @@ public class LiftArm implements hardwareSubsystem {
         bottom = hardwareMap.get(DcMotor.class, Names.LIFT_BOTTOM);
         camServo = hardwareMap.get(Servo.class, Names.CAM_SERVO);
         liftLatch = hardwareMap.get(Servo.class, Names.LIFT_LATCH);
+        latchSwitch = hardwareMap.get(RevTouchSensor.class, Names.LATCH_SWITCH);
 
         bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -46,30 +49,28 @@ public class LiftArm implements hardwareSubsystem {
     public void prepareToUnlatch() {
         output.write("Lift Arm", "Closing hook...");
         camServo.setPosition(CAM_CLOSED_POSITION);
-
-        output.write("Lift Arm", "Running to bottom limit");
-        runToBottomLimit(true, -0.5);
-        output.write("Lift Arm", "At bottom limit");
-
-        bottom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double liftPower = -0.5;
-        bottom.setPower(liftPower);
-
-
-
-        liftLatch.setPosition(LATCH_OPEN_POSITION);
-        for(int i = 0; i < 5; i++) {
-            doSleep(200);
-            bottom.setPower(0);
-            doSleep(50);
-            bottom.setPower(liftPower);
-        }
-
         int bottomCurrentPosition = bottom.getCurrentPosition();
 
-        bottom.setTargetPosition(bottomCurrentPosition);
+        boolean switchValue = latchSwitch.isPressed();
+        while(!switchValue) {
+            liftLatch.setPosition(LATCH_OPEN_POSITION);
+            int stepsToTurn = getStepsToTurn(-0.125);
+            bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            bottom.setTargetPosition(bottomCurrentPosition + stepsToTurn);
+            bottom.setPower(0.2);
 
-        bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            long startTime = System.currentTimeMillis();
+            while (bottom.isBusy()
+                    && !switchValue
+                    && System.currentTimeMillis() - startTime < 100) {
+                doSleep(10);
+                switchValue = latchSwitch.isPressed();
+            }
+            switchValue = latchSwitch.isPressed();
+            bottom.setTargetPosition(bottomCurrentPosition + stepsToTurn);
+        }
+
+        RobotLog.i("Exiting unlatch code");
     }
 
     public void landRobot() {
@@ -155,6 +156,7 @@ public class LiftArm implements hardwareSubsystem {
         selected.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         int currentPosition = selected.getCurrentPosition();
 
+        liftLatch.setPosition(LATCH_OPEN_POSITION);
         selected.setTargetPosition(currentPosition + steps);
         selected.setPower(0.5);
 

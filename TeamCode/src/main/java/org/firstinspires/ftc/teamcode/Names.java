@@ -14,6 +14,7 @@ public class Names {
     public static String TOP_LIMIT = "Top Limit";
     public static String BOTTOM_LIMIT = "Bottom Limit";
     public static final String LIFT_LATCH = "Lift Latch";
+    public static final String LATCH_SWITCH = "Latch Switch";
 
     public static String COLLECTOR_UP_DOWN = "Collector Up Down";
     public static String COLLECTOR_DRIVE = "Collector Drive";
