@@ -117,7 +117,7 @@ public class CraterOpMode extends LinearOpMode {
         driveTrain.driveTo(0,52);
         driveTrain.driveTo(-48,56);
 //        //Make a line for dropping marker in depot before heading to crater.
-       collector.lowerCollector();
+       collector.lowerAndWait();
        collector.blow();
         sleep(2000);
        collector.raiseCollector();

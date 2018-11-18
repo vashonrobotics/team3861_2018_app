@@ -26,6 +26,16 @@ public class Collector
         axel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         axel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+
+    public void lowerAndWait(){
+        lowerCollector();
+        while(axel.isBusy()){
+            try {
+                Thread.sleep(10);
+            }catch (InterruptedException ex) {
+            }
+        }
+    }
     public void lowerCollector(){
         axel.setTargetPosition(725);
         axel.setPower(0.75);

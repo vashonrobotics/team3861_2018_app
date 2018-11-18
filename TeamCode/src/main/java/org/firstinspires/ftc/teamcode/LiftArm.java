@@ -81,7 +81,7 @@ public class LiftArm implements hardwareSubsystem {
     }
 
     public void retractLandingGear() {
-        
+
         runToBottomLimit(false, -0.5);
         doSleep(100);
         camServo.setPosition(CAM_CLOSED_POSITION);

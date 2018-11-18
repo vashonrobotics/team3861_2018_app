@@ -33,6 +33,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import static java.lang.Math.PI;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -55,49 +57,74 @@ public class DepotOpMode extends LinearOpMode {
     private DriveTrain driveTrain = null;
     private MineralDetector mineralDetector;
     private Navigation navigation;
+    private LiftArm liftArm;
+    private Collector collector;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        OdometryNavigation oNav = new OdometryNavigation(16, 16, Math.PI/4);
+        OdometryNavigation oNav = new OdometryNavigation(-16, 16,  3*PI/4);
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
         this.navigation = oNav;
-        driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
-                oNav, simpleIMU, output);
+        //driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
+        //     oNav, simpleIMU, output);
+        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, simpleIMU, output);
+//        driveTrain = new MiniBotDriveTrain(hardwareMap, navigation,
+//                oNav, simpleIMU, output);
+        collector = new Collector(hardwareMap, output);
+        collector.init();
+
         driveTrain.init();
         mineralDetector = new OpenCVMineralDetector(hardwareMap);
+        mineralDetector.init();
+
+        liftArm = new LiftArm(hardwareMap, output);
+        liftArm.init();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
+        liftArm.prepareToUnlatch();
+        liftArm.landRobot();
+        liftArm.retractLandingGear();
+
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
 
+//        driveTrain.lookAt(-36, 36);
 //        if(mineralDetector.isGold()) {
-//            driveTrain.driveTo(-36,36);
-//        } else {
-//            driveTrain.lookAt(-24, 48);
-//            if(mineralDetector.isGold()) {
+//            driveTrain.lookAt(-48,36);
+//            doSleep();
+//            if(mineralDetector.isGold()){
 //                driveTrain.driveTo(-24,48);
-//            } else {
-//                driveTrain.driveTo(-48,24);
 //            }
+//            else{
+//                driveTrain.driveTo(-48,48);
+//            }
+//        } else {
+//
+//            driveTrain.driveTo(-48,24);
 //        }
-//        //Drive back a little to starting ground position.
-//        driveTrain.driveTo(-16,16);
-//        //Drive to the depot.
-//        driveTrain.driveTo(52,0);
-//        driveTrain.driveTo(-48,56);
-//        //Make a line for dropping marker in depot before heading to crater.
-//        //Drive back to crater.
-//        driveTrain.driveTo(-24,-56);
-
-        driveTrain.driveForward(24);
+        driveTrain.driveTo(-50,50);
+        collector.lowerAndWait();
+        collector.blow();
+        sleep(2000);
+        collector.raiseCollector();
+        driveTrain.driveTo(60,60);
 
     }
-}
+
+    public void doSleep() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            // discard
+        }
+    }
+    }
+
 
