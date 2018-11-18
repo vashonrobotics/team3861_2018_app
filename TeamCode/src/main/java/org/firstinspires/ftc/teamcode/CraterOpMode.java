@@ -58,6 +58,8 @@ public class CraterOpMode extends LinearOpMode {
     private MineralDetector mineralDetector;
     private Navigation navigation;
     private LiftArm liftArm;
+    private Collector collector;
+    private SimpleOutput simpleOutput;
 
     @Override
     public void runOpMode() {
@@ -80,6 +82,9 @@ public class CraterOpMode extends LinearOpMode {
 
         liftArm = new LiftArm(hardwareMap, output);
         liftArm.init();
+
+        collector = new Collector(hardwareMap, simpleOutput);
+        collector.init();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -110,6 +115,11 @@ public class CraterOpMode extends LinearOpMode {
         driveTrain.driveTo(0,52);
         driveTrain.driveTo(-48,56);
 //        //Make a line for dropping marker in depot before heading to crater.
+       collector.lowerCollector();
+       collector.blow();
+        sleep(2000);
+       collector.raiseCollector();
+
 //        //Drive back to crater.
         driveTrain.driveTo(36,56);
     }
