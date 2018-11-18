@@ -94,15 +94,17 @@ public class CraterOpMode extends LinearOpMode {
 
         driveTrain.lookAt(36, 36);
         if(mineralDetector.isGold()) {
-              driveTrain.driveTo(48,48);
+              driveTrain.lookAt(48,36);
+              doSleep();
+              if(mineralDetector.isGold()){
+                  driveTrain.driveTo(48,24);
+              }
+              else{
+                  driveTrain.driveTo(48,48);
+              }
         } else {
-            driveTrain.lookAt(48, 24);
-            doSleep();
-            if(mineralDetector.isGold()) {
-                driveTrain.driveTo(48,24);
-            } else {
+
                 driveTrain.driveTo(24,48);
-            }
         }
         //Drive back a little to starting ground position.
         driveTrain.driveTo(30,30);
