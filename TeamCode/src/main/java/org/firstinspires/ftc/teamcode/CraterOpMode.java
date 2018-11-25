@@ -66,7 +66,7 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        OdometryNavigation oNav = new OdometryNavigation(16, 16,  PI/4);
+        OdometryNavigation oNav = new OdometryNavigation(12, 12,  PI/4);
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
         this.navigation = oNav;
@@ -98,19 +98,19 @@ public class CraterOpMode extends LinearOpMode {
         telemetry.update();
 
         driveTrain.lookAt(36, 36);
-        if(mineralDetector.isGold()) {
-              driveTrain.lookAt(48,36);
+        if(!mineralDetector.isGold()) {
+              driveTrain.lookAt(48,24);  // for the differendial bot this is
               doSleep();
               if(mineralDetector.isGold()){
-                  driveTrain.driveTo(48,24);
+                  driveTrain.driveTo(36,21);
               }
               else{
-                  driveTrain.driveTo(48,48);
+                  driveTrain.driveTo(21,36);
               }
         } else {
-
-                driveTrain.driveTo(24,48);
+            driveTrain.driveTo(36,36);
         }
+        driveTrain.driveForward(-12.0);
         //Drive back a little to starting ground position.
         driveTrain.driveTo(30,30);
         //Drive to the depot.

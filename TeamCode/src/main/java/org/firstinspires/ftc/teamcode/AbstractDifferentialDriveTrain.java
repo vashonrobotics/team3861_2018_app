@@ -99,7 +99,7 @@ public abstract class AbstractDifferentialDriveTrain implements DriveTrain {
             first = false;
             imuTurnAmount = newImuTurnAmount;
 
-        } while (Math.abs(imuTurnAmount) > 0.01);
+        } while (Math.abs(imuTurnAmount) > 0.05);
 
         oNav.setTheta(startingTheta + thetaToTurn);
     }

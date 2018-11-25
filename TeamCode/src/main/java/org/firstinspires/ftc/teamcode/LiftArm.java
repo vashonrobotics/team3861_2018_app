@@ -83,6 +83,7 @@ public class LiftArm implements hardwareSubsystem {
     public void retractLandingGear() {
 
         runToBottomLimit(false, -0.5);
+        bottom.setPower(0.0);
         doSleep(100);
         camServo.setPosition(CAM_CLOSED_POSITION);
         doSleep(100);
@@ -92,14 +93,14 @@ public class LiftArm implements hardwareSubsystem {
         liftLatch.setPosition(LATCH_OPEN_POSITION);
         doSleep(100);
         camServo.setPosition(CAM_OPEN_POSITION);
-        turnWheels(getStepsToTurn(16.0), bottom);
+        turnWheels(getStepsToTurn(14.0), bottom);
     }
 
     public void takeOff() {
         // hole the top motor at current position with full power.
 
         camServo.setPosition(CAM_CLOSED_POSITION);
-        doSleep(500);
+        doSleep(1000);
         runToBottomLimit(false, -1.0);
         liftLatch.setPosition(LATCH_CLOSED_POSITION);
         doSleep(500);

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -52,16 +53,21 @@ public class DifferentialDriveTrain extends AbstractDifferentialDriveTrain {
         String message = String.format("L %d, R %s", rightSteps, leftSteps);
         output.write("Turning wheels", message);
 
-        int absoluteLeft = leftDrive.getCurrentPosition() + leftSteps;
-        int absoluteRight = rightDrive.getCurrentPosition() + rightSteps;
+        int currentLeftPosition = leftDrive.getCurrentPosition();
+        int absoluteLeft = currentLeftPosition + leftSteps;
+        int currentRightPosition = rightDrive.getCurrentPosition();
+        int absoluteRight = currentRightPosition + rightSteps;
 
         leftDrive.setTargetPosition(absoluteLeft);
         rightDrive.setTargetPosition(absoluteRight);
-        leftDrive.setPower(0.5);
-        rightDrive.setPower(0.5);
+        leftDrive.setPower(0.25);
+        rightDrive.setPower(0.25);
 
         while(rightDrive.isBusy() || leftDrive.isBusy()) {
             try {
+                currentLeftPosition = leftDrive.getCurrentPosition();
+                currentRightPosition = rightDrive.getCurrentPosition();
+                RobotLog.i("Left %d, right %d", currentLeftPosition, currentRightPosition);
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
                 break;
