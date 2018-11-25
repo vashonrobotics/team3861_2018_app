@@ -65,7 +65,7 @@ public class DepotOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        OdometryNavigation oNav = new OdometryNavigation(-16, 16,  3*PI/4);
+        OdometryNavigation oNav = new OdometryNavigation(-12, 12,  3*PI/4);
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
         this.navigation = oNav;
@@ -95,27 +95,26 @@ public class DepotOpMode extends LinearOpMode {
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
 
-//        driveTrain.lookAt(-36, 36);
-//        if(mineralDetector.isGold()) {
-//            driveTrain.lookAt(-48,36);
-//            doSleep();
-//            if(mineralDetector.isGold()){
-//                driveTrain.driveTo(-24,48);
-//            }
-//            else{
-//                driveTrain.driveTo(-48,48);
-//            }
-//        } else {
-//
-//            driveTrain.driveTo(-48,24);
-//        }
-        driveTrain.driveTo(-50,50);
-        collector.lowerAndWait();
-        collector.blow();
-        sleep(2000);
-        collector.raiseCollector();
-        driveTrain.driveTo(60,60);
+        driveTrain.lookAt(-36, 36);
+        if(!mineralDetector.isGold()) {
+            driveTrain.lookAt(-48,24);  // for the differential bot this is
+            doSleep();
+            if(mineralDetector.isGold()){
+                driveTrain.driveTo(-36,21);
+            }
+            else{
+                driveTrain.driveTo(-21,36);
+            }
+        } else {
+            driveTrain.driveTo(-36,36);
+        }
 
+//        driveTrain.driveTo(-50,50);
+//        collector.lowerAndWait();
+//        collector.blow();
+//        sleep(2000);
+//        collector.raiseCollector();
+//        driveTrain.driveTo(60,60);
     }
 
     public void doSleep() {

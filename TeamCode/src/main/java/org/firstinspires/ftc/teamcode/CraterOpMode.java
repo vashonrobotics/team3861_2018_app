@@ -99,7 +99,7 @@ public class CraterOpMode extends LinearOpMode {
 
         driveTrain.lookAt(36, 36);
         if(!mineralDetector.isGold()) {
-              driveTrain.lookAt(48,24);  // for the differendial bot this is
+              driveTrain.lookAt(48,24);  // for the differential bot this is
               doSleep();
               if(mineralDetector.isGold()){
                   driveTrain.driveTo(36,21);
@@ -110,20 +110,20 @@ public class CraterOpMode extends LinearOpMode {
         } else {
             driveTrain.driveTo(36,36);
         }
-        driveTrain.driveForward(-12.0);
-        //Drive back a little to starting ground position.
-        driveTrain.driveTo(30,30);
-        //Drive to the depot.
-        driveTrain.driveTo(0,52);
-        driveTrain.driveTo(-48,56);
+//        driveTrain.driveForward(-12.0);
+//        //Drive back a little to starting ground position.
+//        driveTrain.driveTo(30,30);
+//        //Drive to the depot.
+//        driveTrain.driveTo(0,52);
+//        driveTrain.driveTo(-48,56);
 //        //Make a line for dropping marker in depot before heading to crater.
-       collector.lowerAndWait();
-       collector.blow();
-        sleep(2000);
-       collector.raiseCollector();
-
-//        //Drive back to crater.
-        driveTrain.driveTo(36,56);
+//        collector.lowerAndWait();
+//        collector.blow();
+//        sleep(2000);
+//        collector.raiseCollector();
+//
+////        //Drive back to crater.
+//        driveTrain.driveTo(36,56);
     }
 
     public void doSleep() {
