@@ -36,6 +36,11 @@ public abstract class AbstractDifferentialDriveTrain implements DriveTrain {
     @Override
     public void driveTo(double x, double y) {
         lookAt(x, y);
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         double xBot = navigation.getX();
         double yBot = navigation.getY();
 

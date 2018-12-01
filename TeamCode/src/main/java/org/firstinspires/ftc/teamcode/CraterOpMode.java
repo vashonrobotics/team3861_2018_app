@@ -29,6 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Camera;
+import android.hardware.camera2.CameraDevice;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -65,6 +68,7 @@ public class CraterOpMode extends LinearOpMode {
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
 
         OdometryNavigation oNav = new OdometryNavigation(12, 12,  PI/4);
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);

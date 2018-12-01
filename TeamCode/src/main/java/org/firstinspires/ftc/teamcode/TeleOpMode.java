@@ -13,14 +13,13 @@ import org.opencv.core.Range;
 import java.util.ArrayList;
 import static com.qualcomm.robotcore.util.Range.clip;
 
-public class MecaOpMode {
 
     /**
      * Created by FTC on 9/23/2017.
      * updated by Caz
      */
 
-    @TeleOp(name = "Vashon 5961 teleop", group = "Vashon 5961")
+    @TeleOp(name = "Mec TeleOp", group = "Vashon 3861")
     public class TeleOpMode extends OpMode{
         private DcMotor lift;
         private double motorSpeedMultiplier = 1.0;
@@ -33,6 +32,8 @@ public class MecaOpMode {
         private Servo markerDropper;
         private Boolean setMode = false;
         private int previousBaseMotorPos = -1;
+        LiftArm liftArm;
+        private TelemetrySimpleOutput simpleOutput;
 //    private CRServo stickyArm;
 //    boolean pressedA = false;
 
@@ -45,13 +46,14 @@ public class MecaOpMode {
             baseMotorArray.add(hardwareMap.dcMotor.get("motorRB"));
             ((DcMotor)baseMotorArray.get(1)).setDirection(DcMotor.Direction.REVERSE);
             ((DcMotor)baseMotorArray.get(3)).setDirection(DcMotor.Direction.REVERSE);
+            liftArm=new LiftArm(hardwareMap,simpleOutput);
 //
 //        // lift init
-            lift = hardwareMap.dcMotor.get("lift");
+           // lift = hardwareMap.dcMotor.get("lift");
 
-            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+           // lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        stickyArm = hardwareMap.crservo.get("stickyArm");
 
 //
@@ -85,6 +87,15 @@ public class MecaOpMode {
             if(gamepad1.x){
                 previousBaseMotorPos = -1;
             }
+
+            boolean doExtend = gamepad2.a;
+            boolean doRetract = gamepad2.b;
+            if(doExtend) {
+                liftArm.extendLandingGear();
+            } else if(doRetract) {
+                liftArm.takeOff();
+            }
+
 //        for (int i = 0; i < baseMotorArray.size(); i++) {
 //            DcMotor motor = ((DcMotor) baseMotorArray.get(i));
 //            telemetry.addData("motor " + i, motor.getCurrentPosition());
@@ -98,7 +109,7 @@ public class MecaOpMode {
 //            lift.setPower(1);
 //        }
 
-            lift.setPower(gamepad2.right_stick_x);
+          //  lift.setPower(gamepad2.right_stick_x);
 
 //        stickyArm.setPower(gamepad2.left_stick_x/2-.4);
 
@@ -131,4 +142,4 @@ public class MecaOpMode {
         }
     }
 
-}
+
