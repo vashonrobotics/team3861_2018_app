@@ -11,7 +11,7 @@ public class MecanumDriveTrain implements DriveTrain {
     private DcMotor leftDriveRear;
     private DcMotor rightDriveRear;
     private final HardwareMap hardwareMap;
-
+// for servos, we'll have "latchServo." other motors: "intakeMotor,", "armMotor," "liftMotor," and "extendMotor."
     public MecanumDriveTrain(HardwareMap hardwareMap, Navigation navigation) {
         this.hardwareMap = hardwareMap;
         this.navigation = navigation;
