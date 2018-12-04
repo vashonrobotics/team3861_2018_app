@@ -11,11 +11,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 public class LiftArm implements hardwareSubsystem {
     private final SimpleOutput output;
     private DcMotor bottom;
-    private Servo camServo;
     private static final double ENCODER_STEPS_PER_WHEEL_ROTATION = 1680;
-    private static final double WHEEL_RADIUS_INCHES = 0.955;
-    private static final double CAM_OPEN_POSITION = 160.0 / 180;
-    private static final double CAM_CLOSED_POSITION = 0;
+    private static final double WHEEL_RADIUS_INCHES = (20/8);
     private static final double LATCH_OPEN_POSITION = .9;
     private static final double LATCH_CLOSED_POSITION = .4;
 
@@ -32,7 +29,6 @@ public class LiftArm implements hardwareSubsystem {
 
     public void init() {
         bottom = hardwareMap.get(DcMotor.class, Names.LIFT_BOTTOM);
-        camServo = hardwareMap.get(Servo.class, Names.CAM_SERVO);
         liftLatch = hardwareMap.get(Servo.class, Names.LIFT_LATCH);
         latchSwitch = hardwareMap.get(RevTouchSensor.class, Names.LATCH_SWITCH);
 
@@ -48,7 +44,6 @@ public class LiftArm implements hardwareSubsystem {
 
     public void prepareToUnlatch() {
         output.write("Lift Arm", "Closing hook...");
-        camServo.setPosition(CAM_CLOSED_POSITION);
         int bottomCurrentPosition = bottom.getCurrentPosition();
 
         boolean switchValue = latchSwitch.isPressed();
@@ -74,9 +69,9 @@ public class LiftArm implements hardwareSubsystem {
     }
 
     public void landRobot() {
-         turnWheels(getStepsToTurn(14.5), bottom);
+
 //        turnWheels(getStepsToTurn(2.5), top);
-        camServo.setPosition(CAM_OPEN_POSITION);
+        turnWheels(getStepsToTurn(14.5), bottom);
         doSleep(1000);
     }
 
@@ -85,21 +80,16 @@ public class LiftArm implements hardwareSubsystem {
         runToBottomLimit(false, -0.5);
         bottom.setPower(0.0);
         doSleep(100);
-        camServo.setPosition(CAM_CLOSED_POSITION);
-        doSleep(100);
     }
 
     public void extendLandingGear() {
         liftLatch.setPosition(LATCH_OPEN_POSITION);
         doSleep(100);
-        camServo.setPosition(CAM_OPEN_POSITION);
         turnWheels(getStepsToTurn(14.0), bottom);
     }
 
     public void takeOff() {
         // hole the top motor at current position with full power.
-
-        camServo.setPosition(CAM_CLOSED_POSITION);
         doSleep(1000);
         runToBottomLimit(false, -1.0);
         liftLatch.setPosition(LATCH_CLOSED_POSITION);
