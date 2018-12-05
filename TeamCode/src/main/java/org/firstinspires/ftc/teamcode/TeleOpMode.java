@@ -22,17 +22,10 @@ import static com.qualcomm.robotcore.util.Range.clip;
     @TeleOp(name = "Mec TeleOp", group = "Vashon 3861")
     public class TeleOpMode extends OpMode{
         private DcMotor lift;
+        private LiftArm liftArm;
         private double motorSpeedMultiplier = 1.0;
         private ArrayList baseMotorArray = new ArrayList();
-        private int liftTargetPos = 0;
-        private DcMotor collectorExtender;
-        private DcMotor collectorRotator;
-        private Servo collectorGrabber;
-        private Servo collectorGrabberRotator;
-        private Servo markerDropper;
-        private Boolean setMode = false;
         private int previousBaseMotorPos = -1;
-        LiftArm liftArm;
         private TelemetrySimpleOutput simpleOutput;
 //    private CRServo stickyArm;
 //    boolean pressedA = false;
@@ -40,40 +33,28 @@ import static com.qualcomm.robotcore.util.Range.clip;
         @Override
         public void init() {
             // base motor init
-            baseMotorArray.add(hardwareMap.dcMotor.get("motorLF"));
-            baseMotorArray.add(hardwareMap.dcMotor.get("motorRF"));
-            baseMotorArray.add(hardwareMap.dcMotor.get("motorLB"));
-            baseMotorArray.add(hardwareMap.dcMotor.get("motorRB"));
+            baseMotorArray.add(hardwareMap.dcMotor.get(Names.LEFT_FRONT));
+            baseMotorArray.add(hardwareMap.dcMotor.get(Names.RIGHT_FRONT));
+            baseMotorArray.add(hardwareMap.dcMotor.get(Names.LEFT_REAR));
+            baseMotorArray.add(hardwareMap.dcMotor.get(Names.RIGHT_REAR));
             ((DcMotor)baseMotorArray.get(1)).setDirection(DcMotor.Direction.REVERSE);
             ((DcMotor)baseMotorArray.get(3)).setDirection(DcMotor.Direction.REVERSE);
             liftArm=new LiftArm(hardwareMap,simpleOutput);
-//
-//        // lift init
-           // lift = hardwareMap.dcMotor.get("lift");
+            liftArm.init();
 
-            //lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-           // lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            //lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        stickyArm = hardwareMap.crservo.get("stickyArm");
-
-//
-//        markerDropper = hardwareMap.servo.get("dropper");
-
-            // collector init
-//        collectorRotator = hardwareMap.dcMotor.get("rotate");
-//        collectorRotator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        collectorExtender = hardwareMap.dcMotor.get("extend");
-//        collectorExtender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        collectorGrabber = hardwareMap.servo.get("grab");
-//        collectorGrabberRotator = hardwareMap.servo.get("assistant");
-//        for(int i = 0; i < 4; i++){
-//            ((DcMotor)baseMotorArray.get(i)).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        }
         }
 
         @Override
         public void loop() {
-//        telemetry.addData("arm power",stickyArm.getPower());
+         boolean doExtend = gamepad1.a;
+        boolean doRetract = gamepad1.b;
+        if(doExtend) {
+            liftArm.extendLandingGear();
+        } else if(doRetract) {
+            liftArm.takeOff();
+        }
+
+
             if (gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0) {
 //            ((DcMotor) baseMotorArray.get(0)).getCurrentPosition();
                 if (previousBaseMotorPos != -1) {
@@ -88,31 +69,6 @@ import static com.qualcomm.robotcore.util.Range.clip;
                 previousBaseMotorPos = -1;
             }
 
-            boolean doExtend = gamepad2.a;
-            boolean doRetract = gamepad2.b;
-            if(doExtend) {
-                liftArm.extendLandingGear();
-            } else if(doRetract) {
-                liftArm.takeOff();
-            }
-
-//        for (int i = 0; i < baseMotorArray.size(); i++) {
-//            DcMotor motor = ((DcMotor) baseMotorArray.get(i));
-//            telemetry.addData("motor " + i, motor.getCurrentPosition());
-//        }
-//        telemetry.addData("lift encoder", lift.getCurrentPosition());
-//        telemetry.addData("lift Target Pos", liftTargetPos);
-//        if (gamepad2.right_stick_x > 0.1 || gamepad2.right_stick_x < -0.1) {
-//            liftTargetPos += gamepad2.right_stick_x*2;
-//
-//            lift.setTargetPosition(liftTargetPos);
-//            lift.setPower(1);
-//        }
-
-          //  lift.setPower(gamepad2.right_stick_x);
-
-//        stickyArm.setPower(gamepad2.left_stick_x/2-.4);
-
 
             if (gamepad1.right_trigger >= 0.5) {
                 motorSpeedMultiplier = 0.4;
@@ -123,21 +79,6 @@ import static com.qualcomm.robotcore.util.Range.clip;
                     (-(double) gamepad1.left_stick_y) * motorSpeedMultiplier,
                     ((double) gamepad1.right_stick_x) * motorSpeedMultiplier, true);
 
-//
-//            //  up is negative
-            // collector stuff
-//        collectorExtender.setPower(gamepad2.left_stick_x);
-//        collectorRotator.setPower(gamepad2.left_stick_y/3);
-//        if (gamepad2.right_bumper) {
-//            collectorGrabberRotator.setPosition(1);
-//        }else{
-//            collectorGrabberRotator.setPosition(0);
-//        }
-//        if (gamepad2.left_bumper){
-//            collectorGrabber.setPosition(1);
-//        }else{
-//            collectorGrabber.setPosition(0.4);
-//        }
             telemetry.update();
         }
     }
