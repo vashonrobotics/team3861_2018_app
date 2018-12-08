@@ -21,6 +21,7 @@ import static com.qualcomm.robotcore.util.Range.clip;
 
     @TeleOp(name = "Mec TeleOp", group = "Vashon 3861")
     public class TeleOpMode extends OpMode{
+        private Collector collector;
         private DcMotor lift;
         private LiftArm liftArm;
         private double motorSpeedMultiplier = 1.0;
@@ -41,11 +42,30 @@ import static com.qualcomm.robotcore.util.Range.clip;
             ((DcMotor)baseMotorArray.get(3)).setDirection(DcMotor.Direction.REVERSE);
             liftArm=new LiftArm(hardwareMap,simpleOutput);
             liftArm.init();
+            collector=new Collector(hardwareMap,simpleOutput);
+            collector.init();
 
         }
 
         @Override
         public void loop() {
+            boolean doLengthen = gamepad2.a;
+            boolean doShorten = gamepad2.b;
+            boolean doSuck = gamepad2.x;
+            boolean doBlow = gamepad2.y;
+            if(doBlow){
+                collector.blow();
+            }else if(doSuck){
+                collector.suck();
+            }
+            else if(!doBlow&&!doSuck){
+                collector.stop();
+            }
+            if(doLengthen){
+                collector.extend();
+            }else if(doShorten){
+                collector.retract();
+            }
          boolean doExtend = gamepad1.a;
         boolean doRetract = gamepad1.b;
         if(doExtend) {
