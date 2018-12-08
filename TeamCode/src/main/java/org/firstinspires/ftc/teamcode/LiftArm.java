@@ -12,7 +12,7 @@ public class LiftArm implements hardwareSubsystem {
     private final SimpleOutput output;
     private DcMotor bottom;
     private static final double ENCODER_STEPS_PER_WHEEL_ROTATION = 1680;
-    private static final double WHEEL_RADIUS_INCHES = (20/8);
+    private static final double WHEEL_RADIUS_INCHES = 1.2/Math.PI;
     private static final double LATCH_OPEN_POSITION = .9;
     private static final double LATCH_CLOSED_POSITION = .4;
 
@@ -34,11 +34,11 @@ public class LiftArm implements hardwareSubsystem {
 
         bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        topLimit = hardwareMap.get(DigitalChannel.class, Names.TOP_LIMIT);
-        topLimit.setMode(DigitalChannel.Mode.INPUT);
+        //topLimit = hardwareMap.get(DigitalChannel.class, Names.TOP_LIMIT);
+        //topLimit.setMode(DigitalChannel.Mode.INPUT);
 
-        bottomLimit = hardwareMap.get(DigitalChannel.class, Names.BOTTOM_LIMIT);
-        bottomLimit.setMode(DigitalChannel.Mode.INPUT);
+        //bottomLimit = hardwareMap.get(DigitalChannel.class, Names.BOTTOM_LIMIT);
+        //bottomLimit.setMode(DigitalChannel.Mode.INPUT);
         doSleep(100);
     }
 
@@ -71,13 +71,13 @@ public class LiftArm implements hardwareSubsystem {
     public void landRobot() {
 
 //        turnWheels(getStepsToTurn(2.5), top);
-        turnWheels(getStepsToTurn(14.5), bottom);
+        turnWheels(getStepsToTurn(8.5), bottom);
         doSleep(1000);
     }
 
     public void retractLandingGear() {
 
-        runToBottomLimit(false, -0.5);
+        turnWheels(getStepsToTurn(8.5),bottom);
         bottom.setPower(0.0);
         doSleep(100);
     }
@@ -85,54 +85,54 @@ public class LiftArm implements hardwareSubsystem {
     public void extendLandingGear() {
         liftLatch.setPosition(LATCH_OPEN_POSITION);
         doSleep(100);
-        turnWheels(getStepsToTurn(14.0), bottom);
+        turnWheels(getStepsToTurn(-8.5), bottom);
     }
 
     public void takeOff() {
         // hole the top motor at current position with full power.
         doSleep(1000);
-        runToBottomLimit(false, -1.0);
+        turnWheels(getStepsToTurn(8.5),bottom);
         liftLatch.setPosition(LATCH_CLOSED_POSITION);
         doSleep(500);
 
         bottom.setPower(0);
    }
 
-    private void runToBottomLimit(boolean reset, double power) {
+    //private void runToBottomLimit(boolean reset, double power) {
 
-        runToSwitch(this.bottomLimit, power, reset);
-    }
+      //  runToSwitch(this.bottomLimit, power, reset);
+   // }
 
-    private void runToTopLimit() {
-        runToSwitch(this.topLimit, 0.5, false);
-    }
+   // private void runToTopLimit() {
+   //     runToSwitch(this.topLimit, 0.5, false);
+   // }
 
-    private void runToSwitch(DigitalChannel limitSwitch, double power, boolean reset) {
-        bottom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        bottom.setPower(power);
-        long lastFalseTime = System.currentTimeMillis();
-        while(true) {
-            boolean state = limitSwitch.getState();
-            // false = triggered. true = open
-            if(!state) {
-                RobotLog.i("switch state = %s", Boolean.toString(state));
-                if(System.currentTimeMillis() - lastFalseTime > 100) {
-                    break;
-                }
-            } else {
-                lastFalseTime = System.currentTimeMillis();
-            }
-            doSleep(10);
-        }
-        if(reset) {
-            bottom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            bottom.setTargetPosition(0);
-        } else {
-            int currentPosition = bottom.getCurrentPosition();
-            bottom.setTargetPosition(currentPosition);
-        }
-        bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
+//    private void runToSwitch(DigitalChannel limitSwitch, double power, boolean reset) {
+//        bottom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        bottom.setPower(power);
+//        long lastFalseTime = System.currentTimeMillis();
+//        while(true) {
+//            boolean state = limitSwitch.getState();
+//            // false = triggered. true = open
+//            if(!state) {
+//                RobotLog.i("switch state = %s", Boolean.toString(state));
+//                if(System.currentTimeMillis() - lastFalseTime > 100) {
+//                    break;
+//                }
+//            } else {
+//                lastFalseTime = System.currentTimeMillis();
+//            }
+//            doSleep(10);
+//        }
+//        if(reset) {
+//            bottom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            bottom.setTargetPosition(0);
+//        } else {
+//            int currentPosition = bottom.getCurrentPosition();
+//            bottom.setTargetPosition(currentPosition);
+//        }
+//        bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//    }
 
     private int getStepsToTurn(double distance) {
         double wheelRadians = distance / WHEEL_RADIUS_INCHES;

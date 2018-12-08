@@ -10,6 +10,8 @@ public class Collector
     private final SimpleOutput simpleOutput;
     private DcMotor drive;
     private DcMotor axel;
+    private DcMotor extender;
+
     //Want to lower and spin collector.
 
     public Collector(HardwareMap hardwareMap, SimpleOutput simpleOutput) {
@@ -21,7 +23,7 @@ public class Collector
 
         drive = hardwareMap.get(DcMotor.class, Names.COLLECTOR_DRIVE);
         axel = hardwareMap.get(DcMotor.class, Names.COLLECTOR_UP_DOWN);
-
+        extender = hardwareMap.get(DcMotor.class, "Extendor");
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         axel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         axel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -39,6 +41,14 @@ public class Collector
     public void lowerCollector(){
         axel.setTargetPosition(725);
         axel.setPower(0.75);
+    }
+
+    public void extend(){
+        extender.setPower(.75);
+    }
+
+    public void retract(){
+        extender.setPower(-.75);
     }
     public void raiseCollector(){
         axel.setTargetPosition(0);
