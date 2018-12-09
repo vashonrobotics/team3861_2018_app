@@ -10,4 +10,5 @@ public interface DriveTrain {
     void lookAt(double x, double y);
 
     void driveForward(double distance);
+    void driveLeft(double distance);
 }

@@ -12,8 +12,8 @@ public class LiftArm implements hardwareSubsystem {
     private final SimpleOutput output;
     private DcMotor bottom;
     private static final double ENCODER_STEPS_PER_WHEEL_ROTATION = 1680;
-    private static final double WHEEL_RADIUS_INCHES = 1.2/Math.PI;
-    private static final double LATCH_OPEN_POSITION = .9;
+    private static final double WHEEL_RADIUS_INCHES = 1/2.54;
+    private static final double LATCH_OPEN_POSITION = 0.92;
     private static final double LATCH_CLOSED_POSITION = .4;
 
     private HardwareMap hardwareMap;
@@ -52,7 +52,7 @@ public class LiftArm implements hardwareSubsystem {
             int stepsToTurn = getStepsToTurn(-0.125);
             bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             bottom.setTargetPosition(bottomCurrentPosition + stepsToTurn);
-            bottom.setPower(0.2);
+            bottom.setPower(1.0);
 
             long startTime = System.currentTimeMillis();
             while (bottom.isBusy()
@@ -62,7 +62,7 @@ public class LiftArm implements hardwareSubsystem {
                 switchValue = latchSwitch.isPressed();
             }
             switchValue = latchSwitch.isPressed();
-            bottom.setTargetPosition(bottomCurrentPosition + stepsToTurn);
+            bottomCurrentPosition = bottom.getCurrentPosition();
         }
 
         RobotLog.i("Exiting unlatch code");
@@ -71,13 +71,13 @@ public class LiftArm implements hardwareSubsystem {
     public void landRobot() {
 
 //        turnWheels(getStepsToTurn(2.5), top);
-        turnWheels(getStepsToTurn(8.5), bottom);
+        turnWheels(getStepsToTurn(8), bottom);
         doSleep(1000);
     }
 
     public void retractLandingGear() {
 
-        turnWheels(getStepsToTurn(8.5),bottom);
+        turnWheels(getStepsToTurn(-8.),bottom);
         bottom.setPower(0.0);
         doSleep(100);
     }
@@ -91,7 +91,7 @@ public class LiftArm implements hardwareSubsystem {
     public void takeOff() {
         // hole the top motor at current position with full power.
         doSleep(1000);
-        turnWheels(getStepsToTurn(8.5),bottom);
+        turnWheels(getStepsToTurn(8),bottom);
         liftLatch.setPosition(LATCH_CLOSED_POSITION);
         doSleep(500);
 
@@ -150,11 +150,18 @@ public class LiftArm implements hardwareSubsystem {
         liftLatch.setPosition(LATCH_OPEN_POSITION);
         selected.setTargetPosition(currentPosition + steps);
         selected.setPower(0.5);
-
-        while(selected.isBusy()) {
+        int lastPosition = 0;
+        int countUnmoved = 0;
+        while(selected.isBusy() && countUnmoved < 5) {
             RobotLog.i("Lift position %d", currentPosition);
             doSleep(10);
+            lastPosition = currentPosition;
             currentPosition = selected.getCurrentPosition();
+            if(Math.abs(currentPosition - lastPosition) < 5) {
+                countUnmoved++;
+            } else {
+                countUnmoved = 0;
+            }
         }
     }
 

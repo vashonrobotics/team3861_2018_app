@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static java.lang.Math.PI;
@@ -49,90 +50,63 @@ import static java.lang.Math.PI;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Depot Autonomous Op Mode", group="Linear Opmode")
-public class DepotOpMode extends LinearOpMode {
+@Autonomous(name="Encoder Test Op Mode", group="Linear Opmode")
+public class EncoderTestOpMode extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DriveTrain driveTrain = null;
-    private MineralDetector mineralDetector;
     private Navigation navigation;
-    private LiftArm liftArm;
-    private Collector collector;
+    private SimpleOutput simpleOutput;
+    private DcMotor leftDriveFront;
+    private DcMotor rightDriveFront;
+    private DcMotor rightDriveRear;
+    private DcMotor leftDriveRear;
+    private DcMotor bottom;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        OdometryNavigation oNav = new OdometryNavigation(-12, 12,  3*PI/4);
-        SimpleOutput output = new TelemetrySimpleOutput(telemetry);
-        SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
-        this.navigation = oNav;
-        //driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
-        //     oNav, simpleIMU, output);
-        //driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, simpleIMU, output);
-//        driveTrain = new MiniBotDriveTrain(hardwareMap, navigation,
-//                oNav, simpleIMU, output);
 
-        driveTrain = new MecanumDriveTrain(hardwareMap,
-                new MecanumParams(11.75 / 2, 13.75 / 2, 1.96),
-                oNav);
+        leftDriveFront = hardwareMap.get(DcMotor.class, Names.LEFT_FRONT);
+        rightDriveFront = hardwareMap.get(DcMotor.class, Names.RIGHT_FRONT);
+        leftDriveRear = hardwareMap.get(DcMotor.class, Names.LEFT_REAR);
+        rightDriveRear = hardwareMap.get(DcMotor.class, Names.RIGHT_REAR);
+        bottom = hardwareMap.get(DcMotor.class, Names.LIFT_BOTTOM);
 
-        collector = new Collector(hardwareMap, output);
-        collector.init();
-
-        driveTrain.init();
-        mineralDetector = new OpenCVMineralDetector(hardwareMap);
-        mineralDetector.init();
-
-        liftArm = new LiftArm(hardwareMap, output);
-        liftArm.init();
+        leftDriveFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightDriveFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftDriveRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightDriveRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bottom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
-        liftArm.prepareToUnlatch();
-        liftArm.landRobot();
-        driveTrain.driveLeft(4);
-        driveTrain.driveForward(4);
-        driveTrain.driveLeft(-4);
-        liftArm.retractLandingGear();
-        driveTrain.driveForward(-4);
+        while (opModeIsActive())
+        {
+            String s = String.format("lf = %d, lr = %d, rf = %d, rr = %d, bottom = %d",
+                    leftDriveFront.getCurrentPosition(),
+                    leftDriveRear.getCurrentPosition(),
+                    rightDriveFront.getCurrentPosition(),
+                    rightDriveRear.getCurrentPosition(),
+                    bottom.getCurrentPosition());
 
-        telemetry.addData("Status", "Initial sequence");
-        telemetry.update();
-
-        driveTrain.lookAt(-36, 36);
-        if(!mineralDetector.isGold()) {
-            driveTrain.lookAt(-48,24);  // for the differential bot this is
+            telemetry.addData("position", s);
+            telemetry.update();
             doSleep();
-            if(mineralDetector.isGold()){
-                driveTrain.driveTo(-36,21);
-            }
-            else{
-                driveTrain.driveTo(-21,36);
-            }
-        } else {
-            driveTrain.driveTo(-36,36);
         }
-
-//        driveTrain.driveTo(-50,50);
-//        collector.lowerAndWait();
-//        collector.blow();
-//        sleep(2000);
-//        collector.raiseCollector();
-//        driveTrain.driveTo(60,60);
     }
 
     public void doSleep() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException ex) {
             // discard
         }
     }
-    }
-
+}
 

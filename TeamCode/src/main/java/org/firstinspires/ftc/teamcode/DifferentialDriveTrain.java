@@ -45,6 +45,11 @@ public class DifferentialDriveTrain extends AbstractDifferentialDriveTrain {
         rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    @Override
+    public void driveLeft(double distance) {
+
+    }
+
     protected double getWheelRadius() { return WHEEL_RADIUS_INCHES; }
     protected double getDriveLeverArmLength () { return L_INCHES; }
     protected double getStepsPerWheelRotation() { return ENCODER_STEPS_PER_WHEEL_ROTATION; }

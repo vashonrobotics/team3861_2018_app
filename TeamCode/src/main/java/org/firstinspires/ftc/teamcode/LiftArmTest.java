@@ -12,8 +12,8 @@ public class LiftArmTest extends LinearOpMode {
         liftArm.init();
 
         waitForStart();
+        liftArm.prepareToUnlatch();
         liftArm.landRobot();
         liftArm.retractLandingGear();
-        // liftArm.raise();
     }
 }

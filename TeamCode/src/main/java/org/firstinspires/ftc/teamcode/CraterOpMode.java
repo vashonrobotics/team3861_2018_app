@@ -76,9 +76,13 @@ public class CraterOpMode extends LinearOpMode {
         this.navigation = oNav;
         //driveTrain = new FourWheelDifferentialDriveTrain(hardwareMap, navigation,
            //     oNav, simpleIMU, output);
-        driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, simpleIMU, output);
+        //driveTrain = new DifferentialDriveTrain(hardwareMap, navigation, oNav, simpleIMU, output);
 //        driveTrain = new MiniBotDriveTrain(hardwareMap, navigation,
 //                oNav, simpleIMU, output);
+
+        driveTrain = new MecanumDriveTrain(hardwareMap,
+                new MecanumParams(11.75 / 2, 13.75 / 2, 1.96),
+                oNav);
 
         driveTrain.init();
         mineralDetector = new OpenCVMineralDetector(hardwareMap);
@@ -96,7 +100,11 @@ public class CraterOpMode extends LinearOpMode {
 
         liftArm.prepareToUnlatch();
         liftArm.landRobot();
+        driveTrain.driveLeft(4);
+        driveTrain.driveForward(4);
+        driveTrain.driveLeft(-4);
         liftArm.retractLandingGear();
+        driveTrain.driveForward(-4);
 
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
@@ -106,10 +114,9 @@ public class CraterOpMode extends LinearOpMode {
               driveTrain.lookAt(48,24);  // for the differential bot this is
               doSleep();
               if(mineralDetector.isGold()){
-                  driveTrain.driveTo(36,21);
-              }
-              else{
-                  driveTrain.driveTo(21,36);
+                  driveTrain.driveTo(48,24);
+              } else {
+                  driveTrain.driveTo(24,48);
               }
         } else {
             driveTrain.driveTo(36,36);

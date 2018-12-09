@@ -2,24 +2,30 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+
+import static java.lang.Math.PI;
+import static java.lang.Math.max;
 
 public class MecanumDriveTrain implements DriveTrain {
 
+    public static final int ENCODER_STEPS_PER_REVOLUTION = 1120;
     private final Navigation navigation;
     private DcMotor leftDriveFront;
     private DcMotor rightDriveFront;
     private DcMotor leftDriveRear;
     private DcMotor rightDriveRear;
     private final HardwareMap hardwareMap;
-// for servos, we'll have "latchServo." other motors: "intakeMotor,", "armMotor," "liftMotor," and "extendMotor."
-    public MecanumDriveTrain(HardwareMap hardwareMap, Navigation navigation) {
+    private final MecanumParams params;
+    public MecanumDriveTrain(HardwareMap hardwareMap, MecanumParams params,
+                             Navigation navigation) {
+        this.params = params;
         this.hardwareMap = hardwareMap;
         this.navigation = navigation;
     }
 
     @Override
     public void init() {
-
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -28,20 +34,21 @@ public class MecanumDriveTrain implements DriveTrain {
         leftDriveRear = hardwareMap.get(DcMotor.class, Names.LEFT_REAR);
         rightDriveRear = hardwareMap.get(DcMotor.class, Names.RIGHT_REAR);
 
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftDriveFront.setDirection(DcMotor.Direction.FORWARD);
-        leftDriveRear.setDirection(DcMotor.Direction.FORWARD);
-        rightDriveFront.setDirection(DcMotor.Direction.REVERSE);
-        rightDriveRear.setDirection(DcMotor.Direction.REVERSE);
+//        leftDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        leftDriveRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightDriveRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftDriveRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        leftDriveFront.setDirection(DcMotor.Direction.REVERSE);
+        leftDriveRear.setDirection(DcMotor.Direction.REVERSE);
+        rightDriveFront.setDirection(DcMotor.Direction.FORWARD);
+        rightDriveRear.setDirection(DcMotor.Direction.FORWARD);
     }
-
 
     @Override
     public void driveTo(double x, double y) {
@@ -61,7 +68,12 @@ public class MecanumDriveTrain implements DriveTrain {
 
     @Override
     public void turnRelative(double thetaToTurn) {
+//        double rotationalVelocity = PI / 4;
+        mecanum(0, 0, thetaToTurn);
+//        double seconds = thetaToTurn / rotationalVelocity;
+//        doSleepSeconds(seconds);
 
+//        mecanum(0, 0, 0);
     }
 
     @Override
@@ -78,76 +90,96 @@ public class MecanumDriveTrain implements DriveTrain {
 
     @Override
     public void driveForward(double distance) {
+        // set the forward velocity to our speed
+        mecanum(0, distance, 0);
+    }
 
+    @Override
+    public void driveLeft(double distance) {
+        mecanum(-distance, 0, 0);
+    }
+
+    private void doSleepSeconds(double sleepSeconds) {
+        try {
+            Thread.sleep(Math.round(sleepSeconds * 1000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mecanum(double vtx, double vty, double gamma) {
+        // Compute velocities at wheels
+        double C = params.getA() + params.getB();
+        double vw1 = vty - vtx + gamma * C;
+        double vw2 = vty + vtx - gamma * C;
+        double vw3 = vty - vtx - gamma * C;
+        double vw4 = vty + vtx + gamma * C;
+
+        // from wheel velocities in inches per second to radians per second
+        // vwn = r * gamma_n
+        double g1 = linearToWheelRotationRadians(vw1);
+        double g2 = linearToWheelRotationRadians(vw2);
+        double g3 = linearToWheelRotationRadians(vw3);
+        double g4 = linearToWheelRotationRadians(vw4);
+
+        // from radians/sec to encoder steps per second.
+        double e1 = radiansToRotations(g1);
+        double e2 = radiansToRotations(g2);
+        double e3 = radiansToRotations(g3);
+        double e4 = radiansToRotations(g4);
+
+        double encSteps1 = e1 * ENCODER_STEPS_PER_REVOLUTION;
+        double encSteps2 = e2 * ENCODER_STEPS_PER_REVOLUTION;
+        double encSteps3 = e3 * ENCODER_STEPS_PER_REVOLUTION;
+        double encSteps4 = e4 * ENCODER_STEPS_PER_REVOLUTION;
+
+
+//        // rotation in encoder steps per second to power.
+//        MotorConfigurationType motorType = rightDriveRear.getMotorType();
+//        double maxRotationPerSecond = (motorType.getMaxRPM() / 60.0) * motorType.getAchieveableMaxRPMFraction();
+//        double p1 = e1 / maxRotationPerSecond;
+//        double p2 = e2 / maxRotationPerSecond;
+//        double p3 = e3 / maxRotationPerSecond;
+//        double p4 = e4 / maxRotationPerSecond;
+
+        int t1 = (int)(rightDriveFront.getCurrentPosition() + encSteps1);
+        int t2 = (int)(leftDriveFront.getCurrentPosition() + encSteps2);
+        int t3 = (int)(leftDriveRear.getCurrentPosition() + encSteps3);
+        int t4 = (int)(rightDriveRear.getCurrentPosition() + encSteps4);
+
+        rightDriveFront.setTargetPosition(t1);
+        leftDriveFront.setTargetPosition(t2);
+        leftDriveRear.setTargetPosition(t3);
+        rightDriveRear.setTargetPosition(t4);
+
+        rightDriveRear.setPower(.5);
+        rightDriveFront.setPower(.5);
+        leftDriveRear.setPower(.5);
+        leftDriveFront.setPower(.5);
+
+        while(rightDriveFront.isBusy() ||
+                leftDriveFront.isBusy() ||
+                leftDriveRear.isBusy() ||
+                rightDriveRear.isBusy()) {
+            doSleepSeconds(.1);
+        }
+
+        rightDriveRear.setPower(0);
+        rightDriveFront.setPower(0);
+        leftDriveRear.setPower(0);
+        leftDriveFront.setPower(0);
+
+//        rightDriveFront.setPower(p1);
+//        leftDriveFront.setPower(p2);
+//        leftDriveRear.setPower(p3);
+//        rightDriveRear.setPower(p4);
+    }
+
+    private double linearToWheelRotationRadians(double wheelLinearDistance) {
+        return wheelLinearDistance / params.getR();
+    }
+
+    private double radiansToRotations(double wheelRotationRadians) {
+        return wheelRotationRadians / (2 * PI);
     }
 }
-
-
-
-//package org.firstinspires.ftc.teamcode;
-//
-//        import com.qualcomm.robotcore.hardware.DcMotor;
-//
-//        import java.util.ArrayList;
-//        import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-//
-//
-///**
-// * Created by Caz on 9/30/2017.
-// */
-//
-//public class DriveTrain {
-//
-//    //    baseMotorArray goes in order: frontLeft, frontRight, backLeft, backRight
-//    public static void nonMecanum(ArrayList baseMotorArray, double power[]) {
-//    }
-//
-//    public static void mecanum(ArrayList baseMotorArray, double x, double y, double turn, boolean frontIsInTheDirectionOfTheWheels){
-//        double power = maxUnit(Math.sqrt((x * x) + (y * y)));
-////        double radianAngle = 0;
-//        double radianAngle = Math.atan2(y, x) - Math.PI * 1/4;
-////
-//        if (Math.abs(power) + Math.abs(turn) > 1)
-//        {
-//            power = power /(Math.abs(power) + Math.abs(turn));
-//            turn = Math.signum(turn) * (1 - Math.abs(power));
-//        }
-//
-//        double motorPower[] = {
-//                (Math.cos(radianAngle) * power) + turn, // frontLeft
-//                (Math.sin(radianAngle) * power) - turn*(frontIsInTheDirectionOfTheWheels ? 1:-1), // frontRight
-//                (Math.sin(radianAngle) * power) + turn*(frontIsInTheDirectionOfTheWheels ? 1:-1), // backLeft
-//                (Math.cos(radianAngle) * power) - turn  // backRight
-//        };
-//
-//        for (int i = 0; i < baseMotorArray.size(); i++) {
-//            ((DcMotor) baseMotorArray.get(i)).setPower(maxUnit(motorPower[i]));
-//        }
-//    }
-//
-//    private static double maxUnit(final double input) {
-//        return input > 1 ? 1 : input < -1 ? -1 : input;
-//    }
-//    public static void turn(ArrayList baseMotorArray, double angle, double wheelWidthBetweenWheels, double wheelHeightBetweenWheels){
-//        // angle is in degrees
-//        // wheel distances are in mm
-//        // WARNING: leaves motors in run to position mode and doesn't wait for them to run to the position
-//        double distanceToTravel = 2*Math.PI*Math.sqrt(Math.pow(wheelHeightBetweenWheels/2,2)+Math.pow(wheelWidthBetweenWheels/2,2))*angle/360;
-//        final double     COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
-//        final double     DRIVE_GEAR_REDUCTION = 0.5 ;     // This is < 1.0 if geared UP
-//        final double     WHEEL_DIAMETER_MM = 100.0 ;     // For figuring circumference
-//        final double     COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-//                (WHEEL_DIAMETER_MM * 3.1415);
-//        for (int i = 0; i < baseMotorArray.size(); i++) {
-//            DcMotor motor = ((DcMotor) baseMotorArray.get(i));
-//            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-////            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            int sideMultiplier = i % 2 == 0 ? 1 : -1;
-//            motor.setPower(0.4*sideMultiplier*Math.signum(angle));
-//        }
-//        while (Math.abs((int) (distanceToTravel * COUNTS_PER_MM)) > Math.abs(((DcMotor) baseMotorArray.get(0)).getCurrentPosition())) {
-//        }
-//        DriveTrain.mecanum(baseMotorArray,0,0,0,true);
-//    }
-//}

@@ -18,4 +18,6 @@ public class Names {
 
     public static String COLLECTOR_UP_DOWN = "Collector Up Down";
     public static String COLLECTOR_DRIVE = "Collector Drive";
+
+    public static String MARKER_SERVO = "Marker Servo";
 }
