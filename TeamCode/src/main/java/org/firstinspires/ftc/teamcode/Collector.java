@@ -39,10 +39,10 @@ public class Collector
         }
     }
     public void lowerCollector(){
-        axel.setPower(-0.75);
+        axel.setPower(-0.5);
     }
     public void raiseCollector(){
-        axel.setPower(1);
+        axel.setPower(.75);
     }
 
     public void stopRaiseLower() {
