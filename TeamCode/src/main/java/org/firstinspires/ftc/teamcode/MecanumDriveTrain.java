@@ -11,6 +11,7 @@ public class MecanumDriveTrain implements DriveTrain {
 
     public static final int ENCODER_STEPS_PER_REVOLUTION = 1120;
     private final Navigation navigation;
+    private final OdometryNavigation oNav;
     private DcMotor leftDriveFront;
     private DcMotor rightDriveFront;
     private DcMotor leftDriveRear;
@@ -18,10 +19,11 @@ public class MecanumDriveTrain implements DriveTrain {
     private final HardwareMap hardwareMap;
     private final MecanumParams params;
     public MecanumDriveTrain(HardwareMap hardwareMap, MecanumParams params,
-                             Navigation navigation) {
+                             Navigation navigation, OdometryNavigation oNav) {
         this.params = params;
         this.hardwareMap = hardwareMap;
         this.navigation = navigation;
+        this.oNav = oNav;
     }
 
     @Override
@@ -68,12 +70,9 @@ public class MecanumDriveTrain implements DriveTrain {
 
     @Override
     public void turnRelative(double thetaToTurn) {
-//        double rotationalVelocity = PI / 4;
+        double startingTheta = navigation.getTheta();
         mecanum(0, 0, thetaToTurn);
-//        double seconds = thetaToTurn / rotationalVelocity;
-//        doSleepSeconds(seconds);
-
-//        mecanum(0, 0, 0);
+        oNav.setTheta(startingTheta + thetaToTurn);
     }
 
     @Override
@@ -90,13 +89,26 @@ public class MecanumDriveTrain implements DriveTrain {
 
     @Override
     public void driveForward(double distance) {
+        double startingTheta = navigation.getTheta();
+        double startingX = navigation.getX();
+        double startingY = navigation.getY();
         // set the forward velocity to our speed
         mecanum(0, distance, 0);
+
+        oNav.setX(startingX + distance * Math.cos(startingTheta));
+        oNav.setY(startingY + distance * Math.sin(startingTheta));
     }
 
     @Override
     public void driveLeft(double distance) {
+        double startingTheta = navigation.getTheta();
+        double startingX = navigation.getX();
+        double startingY = navigation.getY();
+
         mecanum(-distance, 0, 0);
+
+        oNav.setX(startingX + distance * Math.cos(startingTheta + PI/2));
+        oNav.setY(startingY + distance * Math.sin(startingTheta + PI/2));
     }
 
     private void doSleepSeconds(double sleepSeconds) {

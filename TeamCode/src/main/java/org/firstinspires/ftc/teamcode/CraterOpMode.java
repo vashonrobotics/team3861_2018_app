@@ -82,7 +82,7 @@ public class CraterOpMode extends LinearOpMode {
 
         driveTrain = new MecanumDriveTrain(hardwareMap,
                 new MecanumParams(11.75 / 2, 13.75 / 2, 1.96),
-                oNav);
+                oNav, oNav);
 
         driveTrain.init();
         mineralDetector = new OpenCVMineralDetector(hardwareMap);
