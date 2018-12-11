@@ -34,6 +34,7 @@ import android.hardware.camera2.CameraDevice;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static java.lang.Math.PI;
@@ -63,13 +64,13 @@ public class CraterOpMode extends LinearOpMode {
     private LiftArm liftArm;
     private Collector collector;
     private SimpleOutput simpleOutput;
-
+    private Servo markerServo;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
+        markerServo=hardwareMap.get(Servo.class,Names.MARKER_SERVO);
         OdometryNavigation oNav = new OdometryNavigation(12, 12,  PI/4);
         SimpleOutput output = new TelemetrySimpleOutput(telemetry);
         SimpleIMU simpleIMU = new BNO055SimpleIMU(hardwareMap);
@@ -93,6 +94,7 @@ public class CraterOpMode extends LinearOpMode {
 
         collector = new Collector(hardwareMap, simpleOutput);
         collector.init();
+        markerServo.setPosition(.55);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -104,7 +106,6 @@ public class CraterOpMode extends LinearOpMode {
         driveTrain.driveForward(4);
         driveTrain.driveLeft(-4);
         liftArm.retractLandingGear();
-        driveTrain.driveForward(-4);
 
         telemetry.addData("Status", "Initial sequence");
         telemetry.update();
@@ -115,17 +116,23 @@ public class CraterOpMode extends LinearOpMode {
               doSleep();
               if(mineralDetector.isGold()){
                   driveTrain.driveTo(48,24);
+                  driveTrain.driveForward(-12*Math.sqrt(5));
               } else {
                   driveTrain.driveTo(24,48);
+                  driveTrain.driveForward(-12*Math.sqrt(5));
               }
         } else {
             driveTrain.driveTo(36,36);
+            driveTrain.driveForward(-6*Math.sqrt(2));
         }
 //        driveTrain.driveForward(-12.0);
 //        //Drive back a little to starting ground position.
-//        driveTrain.driveTo(30,30);
+
 //        //Drive to the depot.
-//        driveTrain.driveTo(0,52);
+        driveTrain.driveTo(0,57);
+        driveTrain.driveTo(-48,59);
+        doSleep();
+        markerServo.setPosition(.1);
 //        driveTrain.driveTo(-48,56);
 //        //Make a line for dropping marker in depot before heading to crater.
 //        collector.lowerAndWait();
@@ -139,7 +146,7 @@ public class CraterOpMode extends LinearOpMode {
 
     public void doSleep() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException ex) {
             // discard
         }

@@ -10,9 +10,9 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 public class LiftArm implements hardwareSubsystem {
     private final SimpleOutput output;
-    private DcMotor bottom;
+    public DcMotor bottom;
     private static final double ENCODER_STEPS_PER_WHEEL_ROTATION = 1680;
-    private static final double WHEEL_RADIUS_INCHES = 1/2.54;
+    private static final double WHEEL_RADIUS_INCHES = 0.25;
     private static final double LATCH_OPEN_POSITION = 0.92;
     private static final double LATCH_CLOSED_POSITION = .4;
 
@@ -134,7 +134,7 @@ public class LiftArm implements hardwareSubsystem {
 //        bottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //    }
 
-    private int getStepsToTurn(double distance) {
+   public int getStepsToTurn(double distance) {
         double wheelRadians = distance / WHEEL_RADIUS_INCHES;
         double wheelTurns = wheelRadians / (2 * Math.PI);
 
@@ -143,7 +143,7 @@ public class LiftArm implements hardwareSubsystem {
         return steps;
     }
 
-    private void turnWheels(int steps, DcMotor selected) {
+    public void turnWheels(int steps, DcMotor selected) {
         selected.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         int currentPosition = selected.getCurrentPosition();
 

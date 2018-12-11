@@ -164,16 +164,16 @@ public class MecanumDriveTrain implements DriveTrain {
         leftDriveRear.setTargetPosition(t3);
         rightDriveRear.setTargetPosition(t4);
 
-        rightDriveRear.setPower(.5);
-        rightDriveFront.setPower(.5);
-        leftDriveRear.setPower(.5);
-        leftDriveFront.setPower(.5);
+        rightDriveRear.setPower(1);
+        rightDriveFront.setPower(1);
+        leftDriveRear.setPower(1);
+        leftDriveFront.setPower(1);
 
         while(rightDriveFront.isBusy() ||
                 leftDriveFront.isBusy() ||
                 leftDriveRear.isBusy() ||
                 rightDriveRear.isBusy()) {
-            doSleepSeconds(.1);
+            doSleepSeconds(.05);
         }
 
         rightDriveRear.setPower(0);

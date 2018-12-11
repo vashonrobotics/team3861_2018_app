@@ -49,6 +49,7 @@ import static com.qualcomm.robotcore.util.Range.clip;
             liftArm.init();
             collector=new Collector(hardwareMap,simpleOutput);
             collector.init();
+
         }
 
         @Override
