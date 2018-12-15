@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
@@ -10,6 +9,7 @@ import static java.lang.Math.max;
 public class MecanumDriveTrain implements DriveTrain {
 
     public static final int ENCODER_STEPS_PER_REVOLUTION = 1120;
+    private static final int TURN_THRESHOLD = 20;
     private final Navigation navigation;
     private final OdometryNavigation oNav;
     private DcMotor leftDriveFront;
@@ -169,22 +169,33 @@ public class MecanumDriveTrain implements DriveTrain {
         leftDriveRear.setPower(1);
         leftDriveFront.setPower(1);
 
-        while(rightDriveFront.isBusy() ||
-                leftDriveFront.isBusy() ||
-                leftDriveRear.isBusy() ||
-                rightDriveRear.isBusy()) {
-            doSleepSeconds(.05);
+        while(isOutsideTolerance(t1, rightDriveFront) ||
+                isOutsideTolerance(t2, leftDriveFront) ||
+                isOutsideTolerance(t3, leftDriveRear) ||
+                isOutsideTolerance(t4, rightDriveRear)) {
+            doSleepSeconds(0.05);
+
+            // safety valve.  If the drives are not busy, then
+            // we will never make progress, so we should bail.
+            if(!drivesBusy())
+                break;
         }
 
         rightDriveRear.setPower(0);
         rightDriveFront.setPower(0);
         leftDriveRear.setPower(0);
         leftDriveFront.setPower(0);
+    }
 
-//        rightDriveFront.setPower(p1);
-//        leftDriveFront.setPower(p2);
-//        leftDriveRear.setPower(p3);
-//        rightDriveRear.setPower(p4);
+    private boolean drivesBusy() {
+        return rightDriveFront.isBusy() ||
+                leftDriveFront.isBusy() ||
+                leftDriveRear.isBusy() ||
+                rightDriveRear.isBusy();
+    }
+
+    private boolean isOutsideTolerance(int target, DcMotor drive) {
+        return Math.abs(target - drive.getCurrentPosition()) > TURN_THRESHOLD;
     }
 
     private double linearToWheelRotationRadians(double wheelLinearDistance) {
